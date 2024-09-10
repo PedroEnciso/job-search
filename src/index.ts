@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
+import { ipAddresses } from "./validIP";
 
 const dirname = path.resolve();
 dotenv.config();
@@ -13,9 +14,16 @@ app.set("views", path.join(dirname, "src", "views"));
 app.set("view engine", "pug");
 
 app.get("/bot/jobs", (req: Request, res: Response) => {
+  // validate that the user's ip is from cron-job.org
+  const user_ip = req.socket.remoteAddress;
+  const ipIsValid = ipAddresses.filter((ip) => ip === user_ip).length === 1;
   // get all career pages from db
   // create a .jsonl file containing all requests
-  res.send("TODO: Send request to batch api.");
+  res.send(
+    `Request was sent from ${user_ip} which ${
+      ipIsValid ? "is" : "is not"
+    } a valid address.`
+  );
 });
 
 app.get("/bot/batchResponse", (req: Request, res: Response) => {
