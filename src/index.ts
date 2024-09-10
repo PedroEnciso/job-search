@@ -16,12 +16,12 @@ app.set("view engine", "pug");
 app.get("/bot/jobs", (req: Request, res: Response) => {
   // validate that the user's ip is from cron-job.org
   const user_ip = req.socket.remoteAddress;
-  const ipIsValid = ipAddresses.filter((ip) => ip === user_ip).length === 1;
+  const ip_is_valid = ipAddresses.filter((ip) => ip === user_ip).length === 1;
   // get all career pages from db
   // create a .jsonl file containing all requests
   res.send(
     `Request was sent from ${user_ip} which ${
-      ipIsValid ? "is" : "is not"
+      ip_is_valid ? "is" : "is not"
     } a valid address.`
   );
 });
