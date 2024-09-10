@@ -10,7 +10,6 @@
     "build:css": "postcss src/styles.css --dir public",
     "watch:css": "postcss src/styles.css --dir public -w"
   },
-  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
