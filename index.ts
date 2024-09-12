@@ -1,13 +1,13 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
-import { ipAddresses } from "./validIP";
-import { getCompanyUrls, createBatchRequest } from "./db/queries";
-import scraperAPI from "./lib/scraper";
-import fileWriterAPI from "./lib/fileWriter";
-import openaiAPI from "./lib/openai";
+import { ipAddresses } from "./src/validIP";
+import { getCompanyUrls, createBatchRequest } from "./src/db/queries";
+import scraperAPI from "./src/lib/scraper";
+import fileWriterAPI from "./src/lib/fileWriter";
+import openaiAPI from "./src/lib/openai";
 
-import type { Company } from "./types";
+import type { Company } from "./src/types";
 
 const dirname = path.resolve();
 dotenv.config();
