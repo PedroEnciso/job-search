@@ -1,0 +1,1 @@
+export { botRouter } from "./bot";
