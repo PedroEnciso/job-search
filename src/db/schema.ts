@@ -28,5 +28,6 @@ export const batchRequestTable = pgTable("batch_request", {
     .notNull()
     .defaultNow()
     .$onUpdateFn(() => new Date()),
-  status: batchRequestStatusEnum("status"),
+  status: batchRequestStatusEnum("status").notNull(),
+  file_id: text("file_id").notNull(),
 });
