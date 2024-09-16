@@ -12,6 +12,10 @@ const openaiAPI = {
     });
   },
 
+  async getBatchRequest(id: string) {
+    return await openai.batches.retrieve(id);
+  },
+
   async uploadJsonlFile() {
     return await openai.files.create({
       file: fs.createReadStream("./src/requests/requests.jsonl"),
