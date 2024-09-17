@@ -3,6 +3,7 @@ import {
   getCompanyUrls,
   createBatchRequest,
   getOldestPendingBatchRequest,
+  updateBatchRequestStatus,
 } from "../db/queries";
 import scraperAPI from "../lib/scraper";
 import fileWriterAPI from "../lib/fileWriter";
@@ -48,16 +49,28 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
         db_batch_request.id
       );
       // check if the status has changed
-      if (batch_request && batch_request.status !== db_batch_request.status) {
+      if (batch_request.status !== db_batch_request.status) {
         // update the status in the db
+        await updateBatchRequestStatus(batch_request.id, batch_request.status);
+        console.log(`updated status of batch ${batch_request.id}`);
       }
-      // check if the status is completed
-      if (batch_request.status === "completed") {
+      // check if the status is completed and if output file is available
+      if (
+        batch_request.status === "completed" &&
+        batch_request.output_file_id
+      ) {
         // fetch the file response from openai
-        // const fileResponse = await openai.files.content(batch_request.file_id);
-        // const fileContents = await fileResponse.text();
+        const response_array = await openaiAPI.getBatchResponseFileAsArray(
+          batch_request.output_file_id
+        );
+        console.log("I received an array", response_array);
+
         // TODO: logic for retreiving fileContents and writing to db
+      } else {
+        console.log("no batches are ready");
       }
+    } else {
+      console.log("no batches found");
     }
   })();
   res.send("TODO: Check for batch response.");
