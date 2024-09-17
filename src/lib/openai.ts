@@ -16,6 +16,12 @@ const openaiAPI = {
     return await openai.batches.retrieve(id);
   },
 
+  async getBatchResponseFileAsArray(file_id: string) {
+    const fileResponse = await openai.files.content(file_id);
+    const fileContents = await fileResponse.text();
+    return fileContents.split("\n");
+  },
+
   async uploadJsonlFile() {
     return await openai.files.create({
       file: fs.createReadStream("./src/requests/requests.jsonl"),
