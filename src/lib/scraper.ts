@@ -1,21 +1,20 @@
-// import playwright from "playwright";
+import playwright_dev from "playwright";
 import chromium from "@sparticuz/chromium";
-import playwright from "playwright-core";
+import playwright_prod from "playwright-core";
 
 const scraperAPI = {
   async getHtmlFromJobPages(job_urls: string[]): Promise<string[]> {
     // launch chrome browser
-    let browser;
-    if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-      browser = await playwright["chromium"].launch();
-    } else {
-      const executablePath = await chromium.executablePath();
-      browser = await playwright.chromium.launch({
-        executablePath,
-        headless: true, // use this instead of using chromium.headless because it uses the new `headless: "new"` which will throw because playwright expects `headless: boolean`
-        args: chromium.args,
-      });
-    }
+    const browser = await playwright_dev["chromium"].launch();
+    // if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+    //   browser = await playwright_dev["chromium"].launch();
+    // } else {
+    //   browser = await playwright_prod.chromium.launch({
+    //     executablePath: await chromium.executablePath(),
+    //     headless: true,
+    //     args: chromium.args,
+    //   });
+    // }
     // create a new page
     const context = await browser.newContext();
     const page = await context.newPage();
