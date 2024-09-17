@@ -1,2 +1,2 @@
 export type { Company } from "./company";
-export type { BatchRequest } from "./batch_request";
+export type { BatchRequest, BatchRequestStatus } from "./batch_request";

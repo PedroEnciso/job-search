@@ -5,7 +5,7 @@ export interface BatchRequest {
   status: BatchRequestStatus;
 }
 
-type BatchRequestStatus =
+export type BatchRequestStatus =
   | "validating"
   | "failed"
   | "in_progress"
