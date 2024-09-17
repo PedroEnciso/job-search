@@ -5,16 +5,15 @@ import playwright_prod from "playwright-core";
 const scraperAPI = {
   async getHtmlFromJobPages(job_urls: string[]): Promise<string[]> {
     // launch chrome browser
-    const browser = await playwright_dev["chromium"].launch();
-    // if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-    //   browser = await playwright_dev["chromium"].launch();
-    // } else {
-    //   browser = await playwright_prod.chromium.launch({
-    //     executablePath: await chromium.executablePath(),
-    //     headless: true,
-    //     args: chromium.args,
-    //   });
-    // }
+    // const browser = await playwright_dev["chromium"].launch();
+    let browser;
+    if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+      browser = await playwright_dev.chromium.launch();
+    } else {
+      browser = await playwright_prod.chromium.connect(
+        `https://production-sfo.browserless.io/firefox/playwright?token=${process.env.BROWSERLESS_API_KEY}`
+      );
+    }
     // create a new page
     const context = await browser.newContext();
     const page = await context.newPage();
