@@ -9,8 +9,7 @@
     "dev": "tsx watch src/index.ts",
     "build:css": "postcss src/styles.css --dir public",
     "watch:css": "postcss src/styles.css --dir public -w",
-    "build:db": "npx drizzle-kit push",
-    "postinstall": "npx playwright install chromium && npx playwright install-deps"
+    "build:db": "npx drizzle-kit push"
   },
   "author": "",
   "license": "ISC",
