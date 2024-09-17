@@ -10,7 +10,7 @@
     "build:css": "postcss src/styles.css --dir public",
     "watch:css": "postcss src/styles.css --dir public -w",
     "build:db": "npx drizzle-kit push",
-    "postinstall": "npx playwright install chromium"
+    "postinstall": "npx playwright install chromium && npx playwright install-deps"
   },
   "author": "",
   "license": "ISC",
