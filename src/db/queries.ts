@@ -1,7 +1,7 @@
 import { db } from ".";
-import { notInArray } from "drizzle-orm";
+import { eq, notInArray } from "drizzle-orm";
 import { batchRequestTable } from "./schema";
-import type { Company, BatchRequest } from "../types";
+import type { Company, BatchRequest, BatchRequestStatus } from "../types";
 
 // SELECT queries
 // TODO: rename function to getAllCompanys
@@ -37,4 +37,14 @@ export async function createBatchRequest(
     status: "validating",
     file_id,
   });
+}
+
+export async function updateBatchRequestStatus(
+  id: string,
+  newStatus: BatchRequestStatus
+): Promise<void> {
+  await db
+    .update(batchRequestTable)
+    .set({ status: newStatus })
+    .where(eq(batchRequestTable.id, id));
 }
