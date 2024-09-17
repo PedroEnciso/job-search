@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx playwright install && npx tsc",
     "start": "node dist/src/index.js",
     "dev": "tsx watch src/index.ts",
     "build:css": "postcss src/styles.css --dir public",
