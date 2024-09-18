@@ -27,6 +27,7 @@ const botAPI = {
       const batch_request = await openaiAPI.createBatchRequest(file.id);
       // save batch id to db
       await createBatchRequest(batch_request.id, file.id);
+      console.log("Finished getting jobs");
     } catch (error) {
       console.log("getJobs Error");
       console.error(error);
@@ -64,6 +65,7 @@ const botAPI = {
           );
           // loop through each response
           for (const response of response_array) {
+            if (response === "") break;
             // get response as JSON
             const json_response: BatchResponse = JSON.parse(response);
             // check if there is an error in the response
@@ -75,14 +77,16 @@ const botAPI = {
               );
             } else {
               // no error, create jobs for each job title in response array
-              const job_array =
+              const array_string =
                 json_response.response.body.choices[0].message.content;
-              console.log(
-                "Job Array:",
-                json_response.response.body.choices[0].message.content
+              // format the string into an JS array
+              const formatted_array_string = array_string.replace(/'/g, '"');
+              const job_title_array: string[] = JSON.parse(
+                formatted_array_string
               );
-              // create an array of jobs
-              const jobs = job_array.map((job) => ({
+              // return;
+              // create an array of jobs from job titles
+              const jobs = job_title_array.map((job) => ({
                 title: job,
                 found_at: db_batch_request.created_at,
                 company_id: parseInt(json_response.custom_id),
