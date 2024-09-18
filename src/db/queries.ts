@@ -1,6 +1,6 @@
 import { db } from ".";
-import { eq, notInArray } from "drizzle-orm";
-import { batchRequestTable, jobTable } from "./schema";
+import { desc, eq, notInArray } from "drizzle-orm";
+import { batchRequestTable, jobTable, match_records } from "./schema";
 import type { Company, BatchRequest, BatchRequestStatus } from "../types";
 import { getErrorMessage } from "../lib/util";
 
@@ -30,6 +30,21 @@ export async function getOldestPendingBatchRequest(): Promise<
     )
     .orderBy(batchRequestTable.created_at)
     .limit(1);
+}
+
+export async function getYoungestCompletedBatchRequest(): Promise<
+  Array<BatchRequest>
+> {
+  try {
+    return db
+      .select()
+      .from(batchRequestTable)
+      .where(eq(batchRequestTable.status, "completed"))
+      .orderBy(desc(batchRequestTable.created_at))
+      .limit(1);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getYoungestCompletedBatchRequest"));
+  }
 }
 
 export async function createBatchRequest(
@@ -73,5 +88,20 @@ export async function insertManyJobs(
     await db.insert(jobTable).values(jobs);
   } catch (error) {
     throw new Error(getErrorMessage(error, "insertManyJobs"));
+  }
+}
+
+export async function getLatestMatchRecord(): Promise<
+  Array<{ id: number; created_at: Date }>
+> {
+  try {
+    // create an array of job
+    return await db
+      .select()
+      .from(match_records)
+      .orderBy(desc(match_records.created_at))
+      .limit(1);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getLatestMatchRecord"));
   }
 }
