@@ -1,4 +1,11 @@
-import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const companyTable = pgTable("company", {
   id: serial("id").primaryKey(),
@@ -30,4 +37,11 @@ export const batchRequestTable = pgTable("batch_request", {
     .$onUpdateFn(() => new Date()),
   status: batchRequestStatusEnum("status").notNull(),
   file_id: text("file_id").notNull(),
+});
+
+export const jobTable = pgTable("job", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  found_at: timestamp("found_at"),
+  company_id: integer("company_id"),
 });
