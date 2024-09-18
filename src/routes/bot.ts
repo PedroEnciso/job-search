@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import {
-  getCompanyUrls,
+  getAllCompanies,
   createBatchRequest,
   getOldestPendingBatchRequest,
   updateBatchRequestStatus,
@@ -18,7 +18,7 @@ botRouter.get("/jobs", async (req: Request, res: Response) => {
   // IIFE to return response immediately
   (async () => {
     // get all companys
-    const companies: Company[] = await getCompanyUrls();
+    const companies: Company[] = await getAllCompanies();
     // get all urls in a string array
     const urls: string[] = companies.map((comp) => comp.jobs_url);
     // get html of each url into an array
