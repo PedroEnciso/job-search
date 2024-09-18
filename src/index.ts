@@ -1,7 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
-import { botRouter } from "./routes";
+import cron from "node-cron";
+import botAPI from "./cron";
+// import { botRouter } from "./routes";
 
 const dirname = path.resolve();
 dotenv.config();
@@ -14,7 +16,25 @@ app.set("views", path.join(dirname, "src", "views"));
 app.set("view engine", "pug");
 
 // use routers
-app.use("/bot", botRouter);
+// commenting out because replaced by cron
+// app.use("/bot", botRouter);
+
+// schedule cron jobs
+cron.schedule("*/5 * * * *", () => {
+  const date = new Date();
+  console.log(
+    `Getting jobs at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  );
+  botAPI.getJobs();
+});
+
+cron.schedule("0 0 * * *", () => {
+  const date = new Date();
+  console.log(
+    `Checking batch response at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  );
+  botAPI.checkBatchResponse();
+});
 
 app.listen(port, () => {
   console.log(`[server]: Server is farting at http://localhost:${port}`);
