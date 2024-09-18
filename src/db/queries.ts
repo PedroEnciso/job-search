@@ -1,12 +1,16 @@
 import { db } from ".";
 import { eq, notInArray } from "drizzle-orm";
-import { batchRequestTable } from "./schema";
+import { batchRequestTable, jobTable } from "./schema";
 import type { Company, BatchRequest, BatchRequestStatus } from "../types";
+import { getErrorMessage } from "../lib/util";
 
 // SELECT queries
-// TODO: rename function to getAllCompanys
-export async function getCompanyUrls(): Promise<Array<Company>> {
-  return await db.query.companyTable.findMany();
+export async function getAllCompanies(): Promise<Array<Company>> {
+  try {
+    return await db.query.companyTable.findMany();
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getAllCompanies"));
+  }
 }
 
 // returns the oldest pending batch request based on created_at column
@@ -32,19 +36,42 @@ export async function createBatchRequest(
   request_id: string,
   file_id: string
 ): Promise<void> {
-  await db.insert(batchRequestTable).values({
-    id: request_id,
-    status: "validating",
-    file_id,
-  });
+  try {
+    await db.insert(batchRequestTable).values({
+      id: request_id,
+      status: "validating",
+      file_id,
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createBatchRequest"));
+  }
 }
 
 export async function updateBatchRequestStatus(
   id: string,
   newStatus: BatchRequestStatus
 ): Promise<void> {
-  await db
-    .update(batchRequestTable)
-    .set({ status: newStatus })
-    .where(eq(batchRequestTable.id, id));
+  try {
+    await db
+      .update(batchRequestTable)
+      .set({ status: newStatus })
+      .where(eq(batchRequestTable.id, id));
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "updateBatchRequestStatus"));
+  }
+}
+
+export async function insertManyJobs(
+  jobs: {
+    title: string;
+    found_at: Date;
+    company_id: number;
+  }[]
+): Promise<void> {
+  try {
+    // create an array of job
+    await db.insert(jobTable).values(jobs);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "insertManyJobs"));
+  }
 }
