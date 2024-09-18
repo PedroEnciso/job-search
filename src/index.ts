@@ -19,22 +19,24 @@ app.set("view engine", "pug");
 // commenting out because replaced by cron
 // app.use("/bot", botRouter);
 
-// schedule cron jobs
-cron.schedule("*/5 * * * *", () => {
-  const date = new Date();
-  console.log(
-    `Getting jobs at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-  );
-  botAPI.getJobs();
-});
+if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+  // schedule cron jobs in development only
+  cron.schedule("0 0 * * *", () => {
+    const date = new Date();
+    console.log(
+      `Getting jobs at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    );
+    botAPI.getJobs();
+  });
 
-cron.schedule("0 0 * * *", () => {
-  const date = new Date();
-  console.log(
-    `Checking batch response at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-  );
-  botAPI.checkBatchResponse();
-});
+  cron.schedule("0 * * * *", () => {
+    const date = new Date();
+    console.log(
+      `Checking batch response at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    );
+    botAPI.checkBatchResponse();
+  });
+}
 
 app.listen(port, () => {
   console.log(`[server]: Server is farting at http://localhost:${port}`);
