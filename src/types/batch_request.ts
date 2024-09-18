@@ -30,7 +30,7 @@ export interface BatchResponse {
         index: number;
         message: {
           role: string;
-          content: string[];
+          content: string;
         };
         logprobs: null | string;
         finish_reason: string;
