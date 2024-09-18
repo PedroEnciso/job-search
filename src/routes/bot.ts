@@ -15,10 +15,17 @@ export const botRouter = express.Router();
 // checks for completed batch requests, adds the responses to db
 botRouter.get("/batchResponse", async (req: Request, res: Response) => {
   // IIFE to return response immediately
+  let is_authorized = true;
+  if (process.env.ENVIRONMENT === "PRODUCTION") {
+    // in prod, check if the auth header is correct:
+    is_authorized =
+      req.headers.auth === process.env.CRON_AUTH_KEY ? true : false;
+  }
+
   (async () => {
     try {
-      console.log("header", req.header);
-      console.log("headers", req.headers);
+      // abort if not authorized
+      if (!is_authorized) return;
       // get the oldest batch request where status is not equal to failed, canceled, expired or completed
       const db_batch_request_array = await getOldestPendingBatchRequest();
       // ensure that a request was found
@@ -89,7 +96,12 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
       console.error(error);
     }
   })();
-  res.send("Checking for batch response.");
+
+  if (is_authorized) {
+    res.send("Checking for batch response.");
+  } else {
+    res.status(401).send("UNAUTHORIZED");
+  }
 });
 
 botRouter.get("/matches", (req: Request, res: Response) => {
