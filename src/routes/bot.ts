@@ -3,12 +3,16 @@ import {
   getOldestPendingBatchRequest,
   updateBatchRequestStatus,
   insertManyJobs,
+  getYoungestCompletedBatchRequest,
+  getLatestMatchRecord,
 } from "../db/queries";
 import openaiAPI from "../lib/openai";
 import type { BatchResponse } from "../types";
+import { dateIsTodayPST } from "../lib/util";
 
 export const botRouter = express.Router();
 
+// checks for completed batch requests, adds the responses to db
 botRouter.get("/batchResponse", async (req: Request, res: Response) => {
   // IIFE to return response immediately
   (async () => {
@@ -85,7 +89,35 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
       console.error(error);
     }
   })();
-  res.send("TODO: Check for batch response.");
+  res.send("Checking for batch response.");
+});
+
+botRouter.get("/matches", (req: Request, res: Response) => {
+  (async () => {
+    // Determine if matches need to be made:
+    // get the youngest completed batch request
+    const response_array = await getYoungestCompletedBatchRequest();
+    const youngest_completed_request = response_array[0];
+    // check if updated_at is today in PST
+    if (dateIsTodayPST(youngest_completed_request.created_at)) {
+      // get the latest match record
+      const match_response_array = await getLatestMatchRecord();
+      const latest_match_record = match_response_array[0];
+      // check if there is a match record from today
+      if (!dateIsTodayPST(latest_match_record.created_at)) {
+        // get users from database
+        // for each user, get their companies and keywords
+        // for each company, get their job titles
+        // check if the job title includes a key word
+        // add that job title to db. the table could be jobs_for_users
+      } else {
+        console.log("Matches have been made today");
+      }
+    } else {
+      console.log("Latest completed batch request was not from today");
+    }
+  })();
+  res.send("Checking for matches");
 });
 
 botRouter.get("/jobs/responses", async (req: Request, res: Response) => {
