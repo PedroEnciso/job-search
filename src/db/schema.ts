@@ -17,7 +17,7 @@ export type InsertCompany = typeof companyTable.$inferInsert;
 export type SelectCompany = typeof companyTable.$inferSelect;
 
 // export const popularityEnum = pgEnum('popularity', ['unknown', 'known', 'popular']);
-export const batchRequestStatusEnum = pgEnum("status", [
+export const batch_request_status_enum = pgEnum("status", [
   "validating",
   "failed",
   "in_progress",
@@ -35,13 +35,18 @@ export const batchRequestTable = pgTable("batch_request", {
     .notNull()
     .defaultNow()
     .$onUpdateFn(() => new Date()),
-  status: batchRequestStatusEnum("status").notNull(),
+  status: batch_request_status_enum("status").notNull(),
   file_id: text("file_id").notNull(),
 });
 
 export const jobTable = pgTable("job", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  found_at: timestamp("found_at"),
-  company_id: integer("company_id"),
+  found_at: timestamp("found_at").notNull(),
+  company_id: integer("company_id").notNull(),
+});
+
+export const match_records = pgTable("match_records", {
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
