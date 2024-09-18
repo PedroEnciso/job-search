@@ -25,7 +25,6 @@ const fileWriterAPI = {
         );
       }
     }
-    console.log("done writing to json file");
   },
 };
 
