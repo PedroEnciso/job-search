@@ -5,12 +5,17 @@ import {
   insertManyJobs,
   getYoungestCompletedBatchRequest,
   getLatestMatchRecord,
+  getUsers,
+  getUserCompanies,
+  getUserCompaniesAndKeywords,
+  getCompanyJobsFromToday,
+  createUserJob,
 } from "../db/queries";
 import openaiAPI from "../lib/openai";
 import type { BatchResponse } from "../types";
 import { dateIsTodayPST } from "../lib/util";
-import SUPABASE_CLASS from "../lib/supabase";
 
+// create router
 export const botRouter = express.Router();
 
 // checks for completed batch requests, adds the responses to db
@@ -123,14 +128,31 @@ botRouter.get("/matches", (req: Request, res: Response) => {
         // check if there is a match record from today
         if (!dateIsTodayPST(latest_match_record.created_at)) {
           // get users from database
-          const SUPABASE = SUPABASE_CLASS();
-          const user_id_array = await SUPABASE.getAllUsers();
+          const users = await getUsers();
           // for each user, get their companies and keywords
-          for (const user_id of user_id_array) {
+          for (const user of users) {
+            const { user_companies, user_keywords } =
+              await getUserCompaniesAndKeywords(user.id);
+            for (const company of user_companies) {
+              // for each company, get their job titles
+              const company_jobs = await getCompanyJobsFromToday(company.id);
+              console.log("I received some jobs from today:", company_jobs);
+              // check if the job title includes a key word
+              for (const job of company_jobs) {
+                // loop through each keyword phrase
+                for (const phrase of user_keywords) {
+                  if (job.title.includes(phrase)) {
+                    console.log(
+                      `I found a match! Job title: ${job.title} and phrase: ${phrase}`
+                    );
+                    // add that job title to db. the table could be user_jobs
+                    await createUserJob(user.id, job.id);
+                    // TODO: send an email to the user
+                  }
+                }
+              }
+            }
           }
-          // for each company, get their job titles
-          // check if the job title includes a key word
-          // add that job title to db. the table could be jobs_for_users
         } else {
           console.log("Matches have been made today");
         }
