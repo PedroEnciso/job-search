@@ -1,8 +1,19 @@
 import { db } from ".";
 import { desc, eq, notInArray } from "drizzle-orm";
-import { batchRequestTable, jobTable, match_records } from "./schema";
-import type { Company, BatchRequest, BatchRequestStatus } from "../types";
-import { getErrorMessage } from "../lib/util";
+import {
+  batchRequestTable,
+  companyTable,
+  jobTable,
+  match_records,
+  user_jobs,
+  users,
+} from "./schema";
+import type { Company, BatchRequest, BatchRequestStatus, User } from "../types";
+import {
+  dateIsTodayPST,
+  getErrorMessage,
+  getStartAndEndHours,
+} from "../lib/util";
 
 // SELECT queries
 export async function getAllCompanies(): Promise<Array<Company>> {
@@ -103,5 +114,86 @@ export async function getLatestMatchRecord(): Promise<
       .limit(1);
   } catch (error) {
     throw new Error(getErrorMessage(error, "getLatestMatchRecord"));
+  }
+}
+
+export async function getUsers(): Promise<Array<User>> {
+  try {
+    return await db.select().from(users);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUsers"));
+  }
+}
+
+export async function getUserCompanies(
+  user_id: string
+): Promise<Array<Company>> {
+  try {
+    const result = await db.query.user_companies.findMany({
+      where: (user_companies, { eq }) => eq(user_companies.user_id, user_id),
+      with: {
+        company: true,
+      },
+    });
+    return result.map((user) => user.company);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserCompanies"));
+  }
+}
+
+export async function getUserCompaniesAndKeywords(user_id: string): Promise<{
+  user_companies: Company[];
+  user_keywords: string[];
+}> {
+  try {
+    const user = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.id, user_id),
+      with: {
+        keywords: true,
+        companies: true,
+      },
+    });
+    // check for undefined user
+    if (!user) {
+      throw new Error("Could not find user with companies and keywords");
+    }
+    return {
+      user_companies: user.companies,
+      user_keywords: user.keywords.map((keyword) => keyword.phrase),
+    };
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserKeywords"));
+  }
+}
+
+export async function getCompanyJobsFromToday(company_id: number): Promise<
+  Array<{
+    id: number;
+    title: string;
+    found_at: Date;
+  }>
+> {
+  try {
+    const { start_date, end_date } = getStartAndEndHours();
+    return await db.query.jobTable.findMany({
+      where: (jobTable, { and, eq, between }) =>
+        and(
+          eq(jobTable.company_id, company_id),
+          between(jobTable.found_at, start_date, end_date)
+        ),
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getCompanyJobs"));
+  }
+}
+
+export async function createUserJob(user_id: string, job_id: number) {
+  try {
+    await db.insert(user_jobs).values({
+      user_id,
+      job_id,
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createUserJob"));
   }
 }
