@@ -4,3 +4,4 @@ export type {
   BatchRequestStatus,
   BatchResponse,
 } from "./batch_request";
+export type { User } from "./user";
