@@ -9,6 +9,7 @@ import {
 import openaiAPI from "../lib/openai";
 import type { BatchResponse } from "../types";
 import { dateIsTodayPST } from "../lib/util";
+import SUPABASE_CLASS from "../lib/supabase";
 
 export const botRouter = express.Router();
 
@@ -57,6 +58,7 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
           for (const response of response_array) {
             if (response === "") break;
             // get response as JSON
+            console.log("Parsing response:", response);
             const json_response: BatchResponse = JSON.parse(response);
             // check if there is an error in the response
             if (json_response.error) {
@@ -71,6 +73,10 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
                 json_response.response.body.choices[0].message.content;
               // format the string into an JS array
               const formatted_array_string = array_string.replace(/'/g, '"');
+              console.log(
+                "Parsing formatted_array_string:",
+                formatted_array_string
+              );
               const job_title_array: string[] = JSON.parse(
                 formatted_array_string
               );
@@ -88,8 +94,6 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
         } else {
           console.log("no batches are ready");
         }
-      } else {
-        console.log("no batches found");
       }
     } catch (error) {
       console.log("checkBatchResponse Error");
@@ -107,26 +111,35 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
 botRouter.get("/matches", (req: Request, res: Response) => {
   (async () => {
     // Determine if matches need to be made:
-    // get the youngest completed batch request
-    const response_array = await getYoungestCompletedBatchRequest();
-    const youngest_completed_request = response_array[0];
-    // check if updated_at is today in PST
-    if (dateIsTodayPST(youngest_completed_request.created_at)) {
-      // get the latest match record
-      const match_response_array = await getLatestMatchRecord();
-      const latest_match_record = match_response_array[0];
-      // check if there is a match record from today
-      if (!dateIsTodayPST(latest_match_record.created_at)) {
-        // get users from database
-        // for each user, get their companies and keywords
-        // for each company, get their job titles
-        // check if the job title includes a key word
-        // add that job title to db. the table could be jobs_for_users
+    try {
+      // get the youngest completed batch request
+      const response_array = await getYoungestCompletedBatchRequest();
+      const youngest_completed_request = response_array[0];
+      // check if updated_at is today in PST
+      if (dateIsTodayPST(youngest_completed_request.created_at)) {
+        // get the latest match record
+        const match_response_array = await getLatestMatchRecord();
+        const latest_match_record = match_response_array[0];
+        // check if there is a match record from today
+        if (!dateIsTodayPST(latest_match_record.created_at)) {
+          // get users from database
+          const SUPABASE = SUPABASE_CLASS();
+          const user_id_array = await SUPABASE.getAllUsers();
+          // for each user, get their companies and keywords
+          for (const user_id of user_id_array) {
+          }
+          // for each company, get their job titles
+          // check if the job title includes a key word
+          // add that job title to db. the table could be jobs_for_users
+        } else {
+          console.log("Matches have been made today");
+        }
       } else {
-        console.log("Matches have been made today");
+        console.log("Latest completed batch request was not from today");
       }
-    } else {
-      console.log("Latest completed batch request was not from today");
+    } catch (error) {
+      console.log("Error in get matches");
+      console.error(error);
     }
   })();
   res.send("Checking for matches");
