@@ -27,3 +27,16 @@ export function dateIsTodayPST(date: Date): boolean {
 
   return false;
 }
+
+export function getStartAndEndHours(): { start_date: Date; end_date: Date } {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setUTCHours(23, 59, 59, 999);
+
+  return {
+    start_date: start,
+    end_date: end,
+  };
+}
