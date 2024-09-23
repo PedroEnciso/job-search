@@ -63,7 +63,7 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
           for (const response of response_array) {
             if (response === "") break;
             // get response as JSON
-            console.log("Parsing response:", response);
+            console.log("Parsing response");
             const json_response: BatchResponse = JSON.parse(response);
             // check if there is an error in the response
             if (json_response.error) {
@@ -78,10 +78,7 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
                 json_response.response.body.choices[0].message.content;
               // format the string into an JS array
               const formatted_array_string = array_string.replace(/'/g, '"');
-              console.log(
-                "Parsing formatted_array_string:",
-                formatted_array_string
-              );
+              console.log("Parsing formatted_array_string");
               const job_title_array: string[] = JSON.parse(
                 formatted_array_string
               );
