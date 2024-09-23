@@ -122,7 +122,7 @@ botRouter.get("/matches", (req: Request, res: Response) => {
         // get the latest match record
         const match_response_array = await getLatestMatchRecord();
         const latest_match_record = match_response_array[0];
-        // check if there is a match record from today
+        // check if there is a match record from today. Proceed if it is not from today
         if (!dateIsTodayPST(latest_match_record.created_at)) {
           // get users from database
           const users = await getUsers();
@@ -139,17 +139,22 @@ botRouter.get("/matches", (req: Request, res: Response) => {
                 // loop through each keyword phrase
                 for (const phrase of user_keywords) {
                   if (job.title.includes(phrase)) {
-                    console.log(
-                      `I found a match! Job title: ${job.title} and phrase: ${phrase}`
-                    );
                     // add that job title to db. the table could be user_jobs
                     await createUserJob(user.id, job.id);
+                    console.log(
+                      `User: ${user.name} | Job: ${job.title} | Keyword: ${phrase}`
+                    );
                     // TODO: send an email to the user
+                    // check if the job is new:
+                    // get user_jobs where job_id eq job.id and user_id is user.id
+                    // check if user_jobs.job.found_at was within 48 hours
+                    // if older than 48 hours, send email to user
                   }
                 }
               }
             }
           }
+          // TODO: create a new match record
         } else {
           console.log("Matches have been made today");
         }
