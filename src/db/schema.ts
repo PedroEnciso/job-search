@@ -16,6 +16,7 @@ export const companyTable = pgTable("company", {
 
 export const companyRelations = relations(companyTable, ({ many }) => ({
   user_companies: many(user_companies),
+  users: many(users),
 }));
 
 export type InsertCompany = typeof companyTable.$inferInsert;
@@ -106,6 +107,7 @@ export const keywords = pgTable("keywords", {
 export const keywordsRelations = relations(keywords, ({ many }) => ({
   user_keywords: many(user_keywords),
   keywords: many(keywords),
+  users: many(users),
 }));
 
 export const user_keywords = pgTable("user_keywords", {
