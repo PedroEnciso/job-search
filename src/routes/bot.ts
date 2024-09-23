@@ -7,9 +7,10 @@ import {
   getLatestMatchRecord,
   getUsers,
   getUserCompanies,
-  getUserCompaniesAndKeywords,
   getCompanyJobsFromToday,
   createUserJob,
+  getUserKeywords,
+  createMatchRecord,
 } from "../db/queries";
 import openaiAPI from "../lib/openai";
 import type { BatchResponse } from "../types";
@@ -128,21 +129,20 @@ botRouter.get("/matches", (req: Request, res: Response) => {
           const users = await getUsers();
           // for each user, get their companies and keywords
           for (const user of users) {
-            const { user_companies, user_keywords } =
-              await getUserCompaniesAndKeywords(user.id);
+            const user_companies = await getUserCompanies(user.id);
+            const user_keywords = await getUserKeywords(user.id);
             for (const company of user_companies) {
               // for each company, get their job titles
               const company_jobs = await getCompanyJobsFromToday(company.id);
-              console.log("I received some jobs from today:", company_jobs);
               // check if the job title includes a key word
               for (const job of company_jobs) {
                 // loop through each keyword phrase
                 for (const phrase of user_keywords) {
-                  if (job.title.includes(phrase)) {
+                  if (job.title.toLowerCase().includes(phrase)) {
                     // add that job title to db. the table could be user_jobs
                     await createUserJob(user.id, job.id);
                     console.log(
-                      `User: ${user.name} | Job: ${job.title} | Keyword: ${phrase}`
+                      `{user: ${user.name}, job: ${job.title}, keyword: ${phrase}}`
                     );
                     // TODO: send an email to the user
                     // check if the job is new:
@@ -155,6 +155,7 @@ botRouter.get("/matches", (req: Request, res: Response) => {
             }
           }
           // TODO: create a new match record
+          await createMatchRecord();
         } else {
           console.log("Matches have been made today");
         }
