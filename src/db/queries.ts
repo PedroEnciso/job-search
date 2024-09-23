@@ -141,28 +141,17 @@ export async function getUserCompanies(
   }
 }
 
-export async function getUserCompaniesAndKeywords(user_id: string): Promise<{
-  user_companies: Company[];
-  user_keywords: string[];
-}> {
+export async function getUserKeywords(user_id: string): Promise<Array<string>> {
   try {
-    const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, user_id),
+    const result = await db.query.user_keywords.findMany({
+      where: (user_keywords, { eq }) => eq(user_keywords.user_id, user_id),
       with: {
         keywords: true,
-        companies: true,
       },
     });
-    // check for undefined user
-    if (!user) {
-      throw new Error("Could not find user with companies and keywords");
-    }
-    return {
-      user_companies: user.companies,
-      user_keywords: user.keywords.map((keyword) => keyword.phrase),
-    };
+    return result.map((user) => user.keywords.phrase);
   } catch (error) {
-    throw new Error(getErrorMessage(error, "getUserKeywords"));
+    throw new Error(getErrorMessage(error, "getUserCompanies"));
   }
 }
 
@@ -193,6 +182,14 @@ export async function createUserJob(user_id: string, job_id: number) {
       user_id,
       job_id,
     });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createUserJob"));
+  }
+}
+
+export async function createMatchRecord() {
+  try {
+    await db.insert(match_records).values({});
   } catch (error) {
     throw new Error(getErrorMessage(error, "createUserJob"));
   }
