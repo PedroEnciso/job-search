@@ -1,5 +1,5 @@
 import { db } from ".";
-import { desc, eq, notInArray } from "drizzle-orm";
+import { and, desc, eq, notInArray } from "drizzle-orm";
 import {
   batchRequestTable,
   companyTable,
@@ -191,6 +191,23 @@ export async function createMatchRecord() {
   try {
     await db.insert(match_records).values({});
   } catch (error) {
-    throw new Error(getErrorMessage(error, "createUserJob"));
+    throw new Error(getErrorMessage(error, "createMatchRecord"));
+  }
+}
+
+export async function getPreviousUserJobMatch(user_id: string, job_id: number) {
+  try {
+    // return await db
+    //   .select()
+    //   .from(user_jobs)
+    //   .where(and(eq(user_jobs.user_id, user_id), eq(user_jobs.job_id, job_id)))
+    return await db.query.user_jobs.findMany({
+      where: and(eq(user_jobs.user_id, user_id), eq(user_jobs.job_id, job_id)),
+      with: {
+        job: true,
+      },
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getLastUserJobMatch"));
   }
 }
