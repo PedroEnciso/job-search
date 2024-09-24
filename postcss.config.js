@@ -1,1 +1,3 @@
-postcss([require("postcss-modules")]);
+module.exports = {
+  plugins: [require("postcss-import")],
+};
