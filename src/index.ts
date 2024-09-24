@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import cron from "node-cron";
 import botAPI from "./cron";
-import { botRouter } from "./routes";
+import { botRouter, view_router } from "./routes";
 
 const dirname = path.resolve();
 dotenv.config();
@@ -16,10 +16,14 @@ app.set("views", path.join(dirname, "src", "views"));
 app.set("view engine", "pug");
 
 // use routers
+app.use("/", view_router);
 app.use("/bot", botRouter);
 
+// make public folder accessible
+app.use(express.static("public"));
+
+// schedule cron jobs in development only
 if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-  // schedule cron jobs in development only
   cron.schedule("0 0 * * *", () => {
     const date = new Date();
     console.log(
