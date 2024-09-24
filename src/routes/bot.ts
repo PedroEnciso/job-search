@@ -11,10 +11,11 @@ import {
   createUserJob,
   getUserKeywords,
   createMatchRecord,
+  getPreviousUserJobMatch,
 } from "../db/queries";
 import openaiAPI from "../lib/openai";
 import type { BatchResponse } from "../types";
-import { dateIsTodayPST } from "../lib/util";
+import { dateIsTodayPST, containsJobWithin48Hours } from "../lib/util";
 
 // create router
 export const botRouter = express.Router();
@@ -145,10 +146,19 @@ botRouter.get("/matches", (req: Request, res: Response) => {
                       `{user: ${user.name}, job: ${job.title}, keyword: ${phrase}}`
                     );
                     // TODO: send an email to the user
-                    // check if the job is new:
-                    // get user_jobs where job_id eq job.id and user_id is user.id
-                    // check if user_jobs.job.found_at was within 48 hours
-                    // if older than 48 hours, send email to user
+                    // check if the job is new
+                    const previous_jobs = await getPreviousUserJobMatch(
+                      user.id,
+                      job.id
+                    );
+                    // check if this job was found within 48 hours
+                    const has_recent_job = containsJobWithin48Hours(
+                      previous_jobs.map((job) => job.job)
+                    );
+                    if (!has_recent_job) {
+                      // last occurance of this job is older than 48 hours, send email to user
+                      console.log("This job is new!");
+                    }
                   }
                 }
               }
