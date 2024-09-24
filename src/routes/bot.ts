@@ -159,8 +159,6 @@ botRouter.get("/matches", (req: Request, res: Response) => {
         } else {
           console.log("Matches have been made today");
         }
-      } else {
-        console.log("Latest completed batch request was not from today");
       }
     } catch (error) {
       console.log("Error in get matches");
