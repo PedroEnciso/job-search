@@ -77,6 +77,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 }));
 
 export const user_companies = pgTable("user_companies", {
+  id: serial("id").primaryKey(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id),
@@ -111,6 +112,7 @@ export const keywordsRelations = relations(keywords, ({ many }) => ({
 }));
 
 export const user_keywords = pgTable("user_keywords", {
+  id: serial("id").primaryKey(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id),
@@ -131,6 +133,7 @@ export const user_keywords_relations = relations(user_keywords, ({ one }) => ({
 }));
 
 export const user_jobs = pgTable("user_jobs", {
+  id: serial("id").primaryKey(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id),
