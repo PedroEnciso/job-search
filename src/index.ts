@@ -1,15 +1,28 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
+import cookie_parser from "cookie-parser";
 import cron from "node-cron";
 import botAPI from "./cron";
+import type { Supabase_User } from "./lib/supabase_user";
 import { botRouter, view_router } from "./routes";
+
+declare global {
+  namespace Express {
+    interface Request {
+      supabase_user?: Supabase_User;
+    }
+  }
+}
 
 const dirname = path.resolve();
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+
+// use middleware
+app.use(cookie_parser());
 
 // set pug as the view engine
 app.set("views", path.join(dirname, "src", "views"));
