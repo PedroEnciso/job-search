@@ -10,4 +10,18 @@ html
     link(rel='stylesheet', href='styles.css')
 
   body
-    h1 Welcome to my page!
+    header 
+      h1 
+        a(
+          href='/'
+          hx-get='/'
+          hx-target='#content'
+          hx-push-url=true
+        ) Job Scout
+
+    main#content
+      case content 
+        when 'login'
+          include login.pug
+        when 'companies'
+          include companies.pug
