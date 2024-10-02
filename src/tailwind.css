@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  min-height: 100svh;
+  /* background-color: #f5f5f5; */
+}
+
+.custom-box-shadow {
+  box-shadow: oklch(89.2096% 0.06028 170.923263) -5px 5px,
+    oklch(98.4625% 0.001706 247.838921) 2px -2px;
+}
+
+.custom-box-shadow::after {
+  content: "";
+  box-shadow: oklch(89.2096% 0.06028 170.923263) -10px 10px,
+    oklch(98.4625% 0.001706 247.838921) 2px -2px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.custom-box-shadow::after:hover {
+  opacity: 1;
+}
+
+.behind {
+  z-index: -1;
+}
+
+.half-highlight {
+  background: linear-gradient(
+    -5deg,
+    oklch(88.0763% 0.049197 8.688364 / 0.7) 40%,
+    transparent 40%
+  );
+}
+
+.repeating-dot-background {
+  background-image: radial-gradient(
+    circle,
+    rgba(231, 162, 0, 0.2) 1px,
+    rgba(231, 162, 0, 0.2) 1px,
+    transparent 1px
+  );
+  background-size: 42px 42px;
+  background-repeat: repeat;
+}
+
+/* LIGHTER BUT THICKER     
+  oklch(98.4625% 0.001706 247.838921) 2px -2px;
+ */
+
+/* DARKER BUT THINNER
+     oklch(87.1681% 0.009339 258.338227) 1px -1px;
+
+ */
