@@ -57,7 +57,7 @@ const openaiAPI = {
           {
             role: "system",
             content:
-              "You will receive a string of html from a job board. Respond with the job titles listed in the html. Format the titles as a javascript string array. Your response should start and end with brackets. For example a response could be ['Job 1', 'Job 2', 'Job 3']",
+              "You will receive a string of html from a job board. Respond with the job titles listed in the html. Format the titles as a javascript string array. Ensure that the response is only a JavaScript array",
           },
           {
             role: "user",
