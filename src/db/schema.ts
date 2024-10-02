@@ -17,6 +17,7 @@ export const companyTable = pgTable("company", {
 export const companyRelations = relations(companyTable, ({ many }) => ({
   user_companies: many(user_companies),
   users: many(users),
+  jobs: many(jobTable),
 }));
 
 export type InsertCompany = typeof companyTable.$inferInsert;
@@ -52,8 +53,12 @@ export const jobTable = pgTable("job", {
   company_id: integer("company_id").notNull(),
 });
 
-export const jobsRelations = relations(jobTable, ({ many }) => ({
+export const jobsRelations = relations(jobTable, ({ many, one }) => ({
   user_jobs: many(user_jobs),
+  company: one(companyTable, {
+    fields: [jobTable.company_id],
+    references: [companyTable.id],
+  }),
 }));
 
 export const match_records = pgTable("match_records", {
