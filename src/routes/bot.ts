@@ -14,7 +14,7 @@ import {
   getPreviousUserJobMatch,
 } from "../db/queries";
 import openaiAPI from "../lib/openai";
-import type { BatchResponse } from "../types";
+import type { BatchResponse, Job } from "../types";
 import { dateIsTodayPST, containsJobWithin48Hours } from "../lib/util";
 
 // create router
@@ -76,15 +76,16 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
               );
             } else {
               // no error, create jobs for each job title in response array
+              // format the string into an JS array
               const array_string =
                 json_response.response.body.choices[0].message.content;
-              // format the string into an JS array
-              const formatted_array_string = array_string.replace(/'/g, '"');
-              console.log("Parsing formatted_array_string");
-              const job_title_array: string[] = JSON.parse(
-                formatted_array_string
-              );
-              // return;
+              // split by opening bracket
+              const string_partial = array_string.split("[");
+              // split by closing bracket
+              const string_partial_2 = string_partial[1].split("]");
+              // get the data in the middle
+              const string_data = string_partial_2[0];
+              const job_title_array: string[] = JSON.parse(`[${string_data}]`);
               // create an array of jobs from job titles
               const jobs = job_title_array.map((job) => ({
                 title: job,
@@ -132,6 +133,8 @@ botRouter.get("/matches", (req: Request, res: Response) => {
           for (const user of users) {
             const user_companies = await getUserCompanies(user.id);
             const user_keywords = await getUserKeywords(user.id);
+            // array that holds all jobs to be add to current jobs
+            const jobs_for_current_jobs: Job[] = [];
             for (const company of user_companies) {
               // for each company, get their job titles
               const company_jobs = await getCompanyJobsFromToday(company.id);
@@ -140,25 +143,30 @@ botRouter.get("/matches", (req: Request, res: Response) => {
                 // loop through each keyword phrase
                 for (const phrase of user_keywords) {
                   if (job.title.toLowerCase().includes(phrase)) {
-                    // add that job title to db. the table could be user_jobs
+                    // add that job title to user_jobs
                     await createUserJob(user.id, job.id);
                     console.log(
                       `{user: ${user.name}, job: ${job.title}, keyword: ${phrase}}`
                     );
-                    // TODO: send an email to the user
-                    // check if the job is new
-                    const previous_jobs = await getPreviousUserJobMatch(
-                      user.id,
-                      job.id
-                    );
-                    // check if this job was found within 48 hours
-                    const has_recent_job = containsJobWithin48Hours(
-                      previous_jobs.map((job) => job.job)
-                    );
-                    if (!has_recent_job) {
-                      // last occurance of this job is older than 48 hours, send email to user
-                      console.log("This job is new!");
-                    }
+
+                    // get the job from current_jobs table
+
+                    // OLD LOGIC
+                    // check if the job is new so we can send an email
+                    // get all occurances of the job
+                    // const previous_jobs = await getPreviousUserJobMatch(
+                    //   user.id,
+                    //   job.id
+                    // );
+                    // check if this occurence was found within 48 hours
+                    // const has_recent_job = containsJobWithin48Hours(
+                    //   previous_jobs.map((job) => job.job)
+                    // );
+                    // if (!has_recent_job) {
+                    //   // last occurance of this job is older than 48 hours, send email to user
+                    //   // TODO: send an email to the user
+                    //   console.log("Sending user an email!");
+                    // }
                   }
                 }
               }
@@ -199,3 +207,13 @@ botRouter.get("/jobs/responses", async (req: Request, res: Response) => {
 
   res.send("Fin");
 });
+
+// set current jobs flow
+
+// before looking for jobs, create a holder array called Holder
+// once a job match is found, check if the job title is living in current jobs db
+// // check for a match by finding a job in current jobs that has the same company and job title
+// // if a match is found, add the job to Holder with current job's found_at value
+// // if there is no match, add the job to Holder
+// once all matches are made, delete all entries in current jobs table
+// add all jobs from Holder into current jobs
