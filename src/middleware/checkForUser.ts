@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import SUPABASE_USER_CLASS from "../lib/supabase_user";
+import type { Supabase_User } from "../lib/supabase_user";
 
 export async function checkForUser(
   req: Request,
@@ -27,8 +28,12 @@ export async function checkForUser(
       res.redirect("/");
     } else {
       // proceed
-      req.supabase_user = supabase_user;
+      req.supabase_user = { ...supabase_user, user_id: user.id };
       next();
     }
   }
+}
+
+export interface Supabase_User_Request extends Supabase_User {
+  user_id: string;
 }
