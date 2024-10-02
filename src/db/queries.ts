@@ -197,10 +197,6 @@ export async function createMatchRecord() {
 
 export async function getPreviousUserJobMatch(user_id: string, job_id: number) {
   try {
-    // return await db
-    //   .select()
-    //   .from(user_jobs)
-    //   .where(and(eq(user_jobs.user_id, user_id), eq(user_jobs.job_id, job_id)))
     return await db.query.user_jobs.findMany({
       where: and(eq(user_jobs.user_id, user_id), eq(user_jobs.job_id, job_id)),
       with: {
@@ -209,5 +205,33 @@ export async function getPreviousUserJobMatch(user_id: string, job_id: number) {
     });
   } catch (error) {
     throw new Error(getErrorMessage(error, "getLastUserJobMatch"));
+  }
+}
+
+export async function getUserJobs(user_id: string) {
+  try {
+    return await db.query.user_jobs.findMany({
+      where: (user_jobs, { eq }) => eq(user_jobs.user_id, user_id),
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserJobs"));
+  }
+}
+
+export async function getUserJobsWithCompanyFromToday(job_id: number) {
+  try {
+    const { start_date, end_date } = getStartAndEndHours();
+    return await db.query.jobTable.findFirst({
+      where: (jobTable, { eq, between, and }) =>
+        and(
+          eq(jobTable.id, job_id),
+          between(jobTable.found_at, start_date, end_date)
+        ),
+      with: {
+        company: true,
+      },
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserJobsFromToday"));
   }
 }
