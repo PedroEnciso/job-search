@@ -4,13 +4,13 @@ import path from "path";
 import cookie_parser from "cookie-parser";
 import cron from "node-cron";
 import botAPI from "./cron";
-import type { Supabase_User } from "./lib/supabase_user";
+import { Supabase_User_Request } from "./middleware/checkForUser";
 import { botRouter, view_router } from "./routes";
 
 declare global {
   namespace Express {
     interface Request {
-      supabase_user?: Supabase_User;
+      supabase_user?: Supabase_User_Request;
     }
   }
 }
