@@ -12,9 +12,12 @@ import {
   getUserKeywords,
   createMatchRecord,
   getPreviousUserJobMatch,
+  getUserCurrentJobs,
+  deleteAllCurrentJobs,
+  bulkAddCurrentJobs,
 } from "../db/queries";
 import openaiAPI from "../lib/openai";
-import type { BatchResponse, Job } from "../types";
+import type { BatchResponse, Job, NewCurrentJob } from "../types";
 import { dateIsTodayPST, containsJobWithin48Hours } from "../lib/util";
 
 // create router
@@ -127,14 +130,16 @@ botRouter.get("/matches", (req: Request, res: Response) => {
         const latest_match_record = match_response_array[0];
         // check if there is a match record from today. Proceed if it is not from today
         if (!dateIsTodayPST(latest_match_record.created_at)) {
+          // array that holds all jobs to be add to current jobs
+          const jobs_for_current_jobs: NewCurrentJob[] = [];
           // get users from database
           const users = await getUsers();
           // for each user, get their companies and keywords
           for (const user of users) {
             const user_companies = await getUserCompanies(user.id);
             const user_keywords = await getUserKeywords(user.id);
-            // array that holds all jobs to be add to current jobs
-            const jobs_for_current_jobs: Job[] = [];
+            // get users current jobs
+            const users_current_jobs = await getUserCurrentJobs(user.id);
             for (const company of user_companies) {
               // for each company, get their job titles
               const company_jobs = await getCompanyJobsFromToday(company.id);
@@ -148,32 +153,51 @@ botRouter.get("/matches", (req: Request, res: Response) => {
                     console.log(
                       `{user: ${user.name}, job: ${job.title}, keyword: ${phrase}}`
                     );
-
-                    // get the job from current_jobs table
-
-                    // OLD LOGIC
-                    // check if the job is new so we can send an email
-                    // get all occurances of the job
-                    // const previous_jobs = await getPreviousUserJobMatch(
-                    //   user.id,
-                    //   job.id
-                    // );
-                    // check if this occurence was found within 48 hours
-                    // const has_recent_job = containsJobWithin48Hours(
-                    //   previous_jobs.map((job) => job.job)
-                    // );
-                    // if (!has_recent_job) {
-                    //   // last occurance of this job is older than 48 hours, send email to user
-                    //   // TODO: send an email to the user
-                    //   console.log("Sending user an email!");
-                    // }
+                    //check to see if an email should be sent
+                    // check if job exists in users_current_jobs
+                    const current_job = users_current_jobs.filter(
+                      (curr_job) => {
+                        if (
+                          curr_job.company_id === company.id &&
+                          curr_job.title === job.title
+                        ) {
+                          // job only exists in current job if job title and company id are the same
+                          return true;
+                        } else {
+                          return false;
+                        }
+                      }
+                    );
+                    if (current_job) {
+                      // adding the job to Holder with current job's found_at value
+                      jobs_for_current_jobs.push({
+                        title: job.title,
+                        company_id: company.id,
+                        user_id: user.id,
+                        found_at: current_job[0].found_at,
+                      });
+                    } else {
+                      // job is new, send an email
+                      console.log("TODO: Send email to customer");
+                      // add the job to holder
+                      jobs_for_current_jobs.push({
+                        title: job.title,
+                        company_id: company.id,
+                        user_id: user.id,
+                        found_at: job.found_at,
+                      });
+                    }
                   }
                 }
               }
             }
           }
-          // TODO: create a new match record
+          // create a new match record
           await createMatchRecord();
+          // erase all current_jobs
+          await deleteAllCurrentJobs();
+          // add all jobs in jobs_for_current_jobs
+          await bulkAddCurrentJobs(jobs_for_current_jobs);
         } else {
           console.log("Matches have been made today");
         }
@@ -207,13 +231,3 @@ botRouter.get("/jobs/responses", async (req: Request, res: Response) => {
 
   res.send("Fin");
 });
-
-// set current jobs flow
-
-// before looking for jobs, create a holder array called Holder
-// once a job match is found, check if the job title is living in current jobs db
-// // check for a match by finding a job in current jobs that has the same company and job title
-// // if a match is found, add the job to Holder with current job's found_at value
-// // if there is no match, add the job to Holder
-// once all matches are made, delete all entries in current jobs table
-// add all jobs from Holder into current jobs
