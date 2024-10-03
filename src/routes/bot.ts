@@ -168,7 +168,7 @@ botRouter.get("/matches", (req: Request, res: Response) => {
                         }
                       }
                     );
-                    if (current_job) {
+                    if (current_job.length > 0) {
                       // adding the job to Holder with current job's found_at value
                       jobs_for_current_jobs.push({
                         title: job.title,
