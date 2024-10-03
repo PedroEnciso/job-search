@@ -56,3 +56,27 @@ export function containsJobWithin48Hours(user_jobs: Job[]): Boolean {
   }
   return false;
 }
+
+export function getUniqueCompanies(
+  jobs: {
+    title: string;
+    company: string;
+    job_url: string;
+    found_at: string;
+  }[]
+): { name: string; url: string }[] {
+  const unique_companies: { name: string; url: string }[] = [];
+
+  jobs.map((job) => {
+    const found_company_array = unique_companies.filter(
+      (uc_job) => uc_job.name === job.company
+    );
+    if (found_company_array.length === 0) {
+      unique_companies.push({
+        name: job.company,
+        url: `/current_jobs?company=${job.company}`,
+      });
+    }
+  });
+  return unique_companies;
+}
