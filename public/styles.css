@@ -2062,6 +2062,9 @@ html {
 .mt-8 {
   margin-top: 2rem;
 }
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
 .block {
   display: block;
 }
@@ -2132,6 +2135,19 @@ html {
 .rounded-xl {
   border-radius: 0.75rem;
 }
+.border-l-2 {
+  border-left-width: 2px;
+}
+.border-b-2 {
+  border-bottom-width: 2px;
+}
+.border-neutral {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-n,oklch(var(--n)/var(--tw-border-opacity)));
+}
+.border-transparent {
+  border-color: transparent;
+}
 .bg-accent {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-a,oklch(var(--a)/var(--tw-bg-opacity)));
@@ -2147,6 +2163,17 @@ html {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+.bg-secondary {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-s,oklch(var(--s)/var(--tw-bg-opacity)));
+}
+.bg-neutral {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
+}
+.p-1 {
+  padding: 0.25rem;
 }
 .px-4 {
   padding-left: 1rem;
@@ -2169,11 +2196,24 @@ html {
 .pt-1 {
   padding-top: 0.25rem;
 }
+.pl-1 {
+  padding-left: 0.25rem;
+}
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
 .text-center {
   text-align: center;
 }
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
 .font-medium {
   font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
 }
 .text-error {
   --tw-text-opacity: 1;
@@ -2186,6 +2226,16 @@ html {
 .text-neutral {
   --tw-text-opacity: 1;
   color: var(--fallback-n,oklch(var(--n)/var(--tw-text-opacity)));
+}
+.text-neutral-content {
+  --tw-text-opacity: 1;
+  color: var(--fallback-nc,oklch(var(--nc)/var(--tw-text-opacity)));
+}
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+.\!filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow) !important;
 }
 body {
   min-height: 100svh;
@@ -2243,6 +2293,10 @@ body {
 
   .md__items-center {
     align-items: center;
+  }
+
+  .md__gap-4 {
+    gap: 1rem;
   }
 
   .md__pr-8 {
