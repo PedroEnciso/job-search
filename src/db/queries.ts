@@ -2,18 +2,20 @@ import { db } from ".";
 import { and, desc, eq, notInArray } from "drizzle-orm";
 import {
   batchRequestTable,
-  companyTable,
+  current_jobs,
   jobTable,
   match_records,
   user_jobs,
   users,
 } from "./schema";
-import type { Company, BatchRequest, BatchRequestStatus, User } from "../types";
-import {
-  dateIsTodayPST,
-  getErrorMessage,
-  getStartAndEndHours,
-} from "../lib/util";
+import type {
+  Company,
+  BatchRequest,
+  BatchRequestStatus,
+  User,
+  NewCurrentJob,
+} from "../types";
+import { getErrorMessage, getStartAndEndHours } from "../lib/util";
 
 // SELECT queries
 export async function getAllCompanies(): Promise<Array<Company>> {
@@ -233,5 +235,34 @@ export async function getUserJobsWithCompanyFromToday(job_id: number) {
     });
   } catch (error) {
     throw new Error(getErrorMessage(error, "getUserJobsFromToday"));
+  }
+}
+
+export async function getUserCurrentJobs(user_id: string) {
+  try {
+    return await db.query.current_jobs.findMany({
+      where: (current_jobs, { eq }) => eq(current_jobs.user_id, user_id),
+      with: {
+        company: true,
+      },
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserCurrentJobs"));
+  }
+}
+
+export async function deleteAllCurrentJobs() {
+  try {
+    await db.delete(current_jobs);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserCurrentJobs"));
+  }
+}
+
+export async function bulkAddCurrentJobs(jobs: NewCurrentJob[]) {
+  try {
+    await db.insert(current_jobs).values(jobs);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserCurrentJobs"));
   }
 }
