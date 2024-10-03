@@ -1,0 +1,9 @@
+h2.prose.prose-2xl.text-center.mb-6 Your current openings
+div#current_jobs(
+  hx-get="/current_jobs"
+  hx-trigger='load'
+  hx-target="#current_jobs"
+)
+  div.htmx-indicator.flex.gap-2
+    span.loading.loading-spinner.loading-sm 
+    p Fetching your jobs

@@ -1,0 +1,12 @@
+li.relative.z-10.min-w-72
+  div.py-2.px-4.flex.flex-col.gap-2.bg-white.rounded-md
+    div.flex.flex-col.gap-2.md__gap-4.md__flex-row.md__items-center
+      p.prose.prose-xl.mb-0
+        strong= job.title
+      div
+        p.half-highlight.inline-block= job.company
+    div.flex.justify-between.items-end
+      p.prose.prose-sm Found on 
+        span=job.found_at
+      a.font-medium.text-neutral.pl-4.md__pr-4(href=job.job_url target="_blank" rel="noopener") View
+  span.block.absolute.-left-2.-bottom-2.top-1.right-1.bg-accent.behind.rounded-md

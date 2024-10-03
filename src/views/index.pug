@@ -11,7 +11,7 @@ html(data-theme="pastel")
     link(href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap", rel='stylesheet')
     link(rel='stylesheet', href='styles.css')
 
-    <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
+    script(src="https://unpkg.com/htmx.org@2.0.2", integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ", crossorigin="anonymous")
 
   body.bg-base-200.repeating-dot-background
     header.prose.prose-a__no-underline.py-6.w-11_12.max-w-4xl.mx-auto
@@ -30,12 +30,4 @@ html(data-theme="pastel")
         when 'error'
           include error.pug
         when 'current jobs'
-          h2.prose.prose-2xl.text-center.mb-8 Your current openings
-          div#current_jobs(
-            hx-get="/current_jobs"
-            hx-trigger='load'
-            hx-target="#current_jobs"
-          )
-            div.htmx-indicator.flex.gap-2
-              span.loading.loading-spinner.loading-sm 
-              p Fetching your jobs
+          include current_jobs/load_current_jobs.pug

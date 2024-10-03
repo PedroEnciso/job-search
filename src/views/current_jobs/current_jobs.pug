@@ -1,0 +1,7 @@
+if error
+  p.text-center= error
+else
+  include filter_buttons.pug 
+  ul.flex.flex-col.max-w-2xl.mx-auto.gap-8.justify-center
+    each job in jobs 
+      include job.pug
