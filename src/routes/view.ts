@@ -7,12 +7,13 @@ import {
   getUserJobs,
   getUserJobsWithCompanyFromToday,
 } from "../db/queries";
+import { getUniqueCompanies } from "../lib/util";
 
 export const view_router = express.Router();
 
 view_router.get("/", checkForUser, async (req: Request, res: Response) => {
   if (req.headers["hx-target"]) {
-    res.render("current jobs");
+    res.render("current_jobs/current jobs");
   } else {
     res.render("index", { content: "current jobs" });
   }
@@ -31,6 +32,7 @@ view_router.get(
   "/current_jobs",
   checkForUser,
   async (req: Request, res: Response) => {
+    let company_filter = (req.query.company as string) || "";
     if (req.headers["hx-target"]) {
       try {
         // get the user's id from req.supabase_user
@@ -44,8 +46,7 @@ view_router.get(
           error_message = "You have no current job openings.";
         }
         // format the jobs for the client
-        const frontend_jobs = current_jobs.map((job) => {
-          if (!job) return false;
+        let frontend_jobs = current_jobs.map((job) => {
           const date = new Date(job.found_at);
           const formattedDate = date.toLocaleDateString("en-US", {
             weekday: "short",
@@ -59,9 +60,19 @@ view_router.get(
             found_at: formattedDate,
           };
         });
+        // get companies
+        const unique_companies = getUniqueCompanies(frontend_jobs);
+        // filter companies based on company query param
+        if (company_filter) {
+          frontend_jobs = frontend_jobs.filter(
+            (job) => job.company === company_filter
+          );
+        }
         // render frontend
-        res.render("current_jobs", {
+        res.render("current_jobs/current_jobs", {
           jobs: frontend_jobs,
+          filter: company_filter,
+          companies: unique_companies,
           error: error_message,
         });
       } catch (error) {
