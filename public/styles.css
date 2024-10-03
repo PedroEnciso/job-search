@@ -2074,9 +2074,6 @@ html {
 .w-11_12 {
   width: 91.666667%;
 }
-.w-screen {
-  width: 100vw;
-}
 .min-w-72 {
   min-width: 18rem;
 }
@@ -2116,13 +2113,6 @@ html {
 }
 .rounded-xl {
   border-radius: 0.75rem;
-}
-.border {
-  border-width: 1px;
-}
-.border-red-500 {
-  --tw-border-opacity: 1;
-  border-color: rgb(239 68 68 / var(--tw-border-opacity));
 }
 .bg-accent {
   --tw-bg-opacity: 1;
@@ -2190,8 +2180,8 @@ body {
 .repeating-dot-background {
   background-image: radial-gradient(
     circle,
-    rgba(231, 162, 0, 0.2) 1px,
-    rgba(231, 162, 0, 0.2) 1px,
+    rgba(231, 162, 0, 0.4) 1px,
+    rgba(231, 162, 0, 0.4) 1px,
     transparent 1px
   );
   background-size: 42px 42px;

@@ -39,8 +39,8 @@ body {
 .repeating-dot-background {
   background-image: radial-gradient(
     circle,
-    rgba(231, 162, 0, 0.2) 1px,
-    rgba(231, 162, 0, 0.2) 1px,
+    rgba(231, 162, 0, 0.4) 1px,
+    rgba(231, 162, 0, 0.4) 1px,
     transparent 1px
   );
   background-size: 42px 42px;
