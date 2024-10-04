@@ -4,6 +4,7 @@ div#current_jobs(
   hx-trigger='load'
   hx-target="#current_jobs"
 )
-  div.htmx-indicator.flex.gap-2
-    span.loading.loading-spinner.loading-sm 
-    p Fetching your jobs
+  div.htmx-indicator.flex.max-w-2xl.mx-auto.justify-center
+    div.m-62px.flex.gap-2.h-100px.bg-white.rounded-md.w-full.items-center.justify-center
+      span.loading.loading-spinner.loading-sm 
+      p Fetching your jobs
