@@ -47,6 +47,22 @@ body {
   background-repeat: repeat;
 }
 
+.h-skeleton-job {
+  height: 118px;
+}
+
+.h-skeleton-filter {
+  height: 38px;
+}
+
+.m-62px {
+  margin-top: 62px;
+}
+
+.h-100px {
+  height: 100px;
+}
+
 /* LIGHTER BUT THICKER     
   oklch(98.4625% 0.001706 247.838921) 2px -2px;
  */
