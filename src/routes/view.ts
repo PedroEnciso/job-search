@@ -8,6 +8,7 @@ import {
   getUserJobsWithCompanyFromToday,
 } from "../db/queries";
 import { getUniqueCompanies } from "../lib/util";
+import auth_controller from "../controllers/auth_controller";
 
 export const view_router = express.Router();
 
@@ -16,14 +17,6 @@ view_router.get("/", checkForUser, async (req: Request, res: Response) => {
     res.render("current_jobs/current jobs");
   } else {
     res.render("index", { content: "current jobs" });
-  }
-});
-
-view_router.get("/login", checkForUser, async (req: Request, res: Response) => {
-  if (req.headers["hx-target"]) {
-    res.render("login");
-  } else {
-    res.render("index", { content: "login" });
   }
 });
 
@@ -88,3 +81,7 @@ view_router.get(
     }
   }
 );
+
+view_router.get("/login", checkForUser, auth_controller.get_login);
+view_router.post("/login", auth_controller.post_login);
+view_router.get("/logout", auth_controller.get_logout);
