@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
 import cookie_parser from "cookie-parser";
+import body_parser from "body-parser";
 import cron from "node-cron";
 import botAPI from "./cron";
 import { Supabase_User_Request } from "./middleware/checkForUser";
@@ -23,6 +24,12 @@ const port = process.env.PORT || 3000;
 
 // use middleware
 app.use(cookie_parser());
+app.use(body_parser.json());
+app.use(
+  body_parser.urlencoded({
+    extended: true,
+  })
+);
 
 // set pug as the view engine
 app.set("views", path.join(dirname, "src", "views"));
