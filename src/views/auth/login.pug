@@ -1,0 +1,30 @@
+section.prose.w-11_12.max-w-xl.mx-auto
+  div.relative.z-10
+    div.bg-white.py-8.px-6.rounded-md
+      h2.prose.prose-xl.text-primary-content.font-semibold.m-0 Welcome back to Job Scout
+      p.mt-4 Please enter your details. If you are new, 
+        a(href='/signup').text-neutral sign in here!
+      if error
+        p.text-error= error
+      form.flex.flex-col.gap-4(
+          hx-post='/login',
+          hx-trigger="submit",
+          hx-target="#content",
+          hx-push-url="false"
+          hx-disabled-elt="#submit"
+      )
+        label.form-control.w-full
+          div.label.pt-0.pb-2
+            span.label-text.font-medium.prose.prose-md.m-0 Email
+          input.input.input-bordered.w-full.rounded#email(type="email", placeholder=email ? email : "example@email.com", required, name="email")
+          p.mt-1.mb-0
+        label.form-control.w-full
+          div.label.pt-0.pb-2
+            span.label-text.font-medium.prose.prose-md Password
+          input.input.input-bordered.w-full.rounded#password(type="password", placeholder="********", required, minlength=6, name="current-password", autocomplete)
+        button#submit.relative.btn.btn-primary.rounded Log in
+          div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
+            span.loading.loading-spinner.loading-sm 
+            p Authenticating... 
+    span.block.absolute.-left-2.-bottom-2.top-1.right-1.bg-accent.behind.rounded-md
+
