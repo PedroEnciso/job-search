@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["./src/views/*.pug"],
+  content: ["./src/views/*.pug", "./src/views/*/*.pug"],
   separator: "__",
   plugins: [require("daisyui"), require("@tailwindcss/typography")],
   daisyui: {
