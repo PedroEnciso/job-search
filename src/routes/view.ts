@@ -14,7 +14,7 @@ export const view_router = express.Router();
 
 view_router.get("/", checkForUser, async (req: Request, res: Response) => {
   if (req.headers["hx-target"]) {
-    res.render("current_jobs/current jobs");
+    res.render("current_jobs/current_jobs");
   } else {
     res.render("index", { content: "current jobs" });
   }
@@ -61,6 +61,14 @@ view_router.get(
             (job) => job.company === company_filter
           );
         }
+        console.log("inside current jobs");
+        console.log("data:", {
+          jobs: frontend_jobs,
+          filter: company_filter,
+          companies: unique_companies,
+          error: error_message,
+        });
+
         // render frontend
         res.render("current_jobs/current_jobs", {
           jobs: frontend_jobs,
