@@ -33,7 +33,7 @@ view_router.get(
         // get users current_jobs
         const current_jobs = await getUserCurrentJobs(user_id);
         // update an error_message if there are not any jobs
-        let error_message;
+        let error_message: string;
         if (current_jobs.length === 0) {
           console.log("setting error message");
           error_message = "You have no current job openings.";
@@ -61,21 +61,15 @@ view_router.get(
             (job) => job.company === company_filter
           );
         }
-        console.log("inside current jobs");
-        console.log("data:", {
-          jobs: frontend_jobs,
-          filter: company_filter,
-          companies: unique_companies,
-          error: error_message,
-        });
-
+        setTimeout(() => {
+          res.render("current_jobs/current_jobs", {
+            jobs: frontend_jobs,
+            filter: company_filter,
+            companies: unique_companies,
+            error: error_message,
+          });
+        }, 5000);
         // render frontend
-        res.render("current_jobs/current_jobs", {
-          jobs: frontend_jobs,
-          filter: company_filter,
-          companies: unique_companies,
-          error: error_message,
-        });
       } catch (error) {
         console.log("Error at GET /current_jobs", error);
         res.render("current_jobs", {
