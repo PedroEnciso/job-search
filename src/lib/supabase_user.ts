@@ -87,11 +87,13 @@ export interface Supabase_User {
     email: string,
     password: string
   ) => Promise<{
-    data: {
-      user: User;
-      session: Session;
-      weakPassword?: WeakPassword;
-    };
+    data:
+      | {
+          user: User;
+          session: Session;
+          weakPassword?: WeakPassword | undefined;
+        }
+      | { user: null; session: null; weakPassword?: null | undefined };
     error: AuthError | null;
   }>;
   sign_in_cheat: () => Promise<{
