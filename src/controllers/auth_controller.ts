@@ -25,14 +25,15 @@ async function post_login(req: Request, res: Response, next: NextFunction) {
     const { error } = await supabase_user.sign_in(email, password);
 
     if (error) {
-      // "There are no records matching this email and password."
+      // unsuccessful login, notify user
       setTimeout(() => {
         res.render("auth/login", {
           error: error.message,
         });
       }, 5000);
     } else {
-      res.render("current_jobs/current_jobs");
+      // success, load current jobs
+      res.redirect("/");
     }
   } catch (error) {
     const message =
