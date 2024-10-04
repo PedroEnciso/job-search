@@ -5,6 +5,7 @@ import {
   serializeCookieHeader,
 } from "@supabase/ssr";
 import {
+  AuthError,
   Session,
   User,
   UserResponse,
@@ -38,7 +39,16 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
 
   const supabase_user = createClient({ req, res });
 
-  async function sign_in() {
+  async function sign_in(email: string, password: string) {
+    const { data, error } = await supabase_user.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    return { data, error };
+  }
+
+  async function sign_in_cheat() {
     console.log("Signing in...");
     const { data, error } = await supabase_user.auth.signInWithPassword({
       email: "ped.enciso@gmail.com",
@@ -67,13 +77,24 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
     return supabase_user.auth.getUser();
   }
 
-  return { sign_in, sign_out, get_user };
+  return { sign_in, sign_in_cheat, sign_out, get_user };
 }
 
 export default SUPABASE_USER_CLASS;
 
 export interface Supabase_User {
-  sign_in: () => Promise<{
+  sign_in: (
+    email: string,
+    password: string
+  ) => Promise<{
+    data: {
+      user: User;
+      session: Session;
+      weakPassword?: WeakPassword;
+    };
+    error: AuthError | null;
+  }>;
+  sign_in_cheat: () => Promise<{
     user: User;
     session: Session;
     weakPassword?: WeakPassword;
