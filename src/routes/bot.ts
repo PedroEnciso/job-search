@@ -95,7 +95,10 @@ botRouter.get("/batchResponse", async (req: Request, res: Response) => {
                 found_at: db_batch_request.created_at,
                 company_id: parseInt(json_response.custom_id),
               }));
-              await insertManyJobs(jobs);
+              // ensure that there are jobs to add
+              if (jobs.length > 0) {
+                await insertManyJobs(jobs);
+              }
             }
           }
           console.log("finished creating jobs");
