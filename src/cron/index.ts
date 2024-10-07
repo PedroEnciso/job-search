@@ -20,7 +20,10 @@ const botAPI = {
       // get html of each url into an array
       const jobHtmlArray: string[] = await scraperAPI.getHtmlFromJobPages(urls);
       // write requests to a .jsonl file
-      fileWriterAPI.writeOpenaiRequestsToJsonlFIle(jobHtmlArray, companies);
+      await fileWriterAPI.writeOpenaiRequestsToJsonlFIle(
+        jobHtmlArray,
+        companies
+      );
       // upload the file to openai
       const file = await openaiAPI.uploadJsonlFile();
       // create batch request using file id
