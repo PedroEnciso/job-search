@@ -1,16 +1,16 @@
 div.flex.gap-6.mb-6.justify-center 
   if filter === "" 
     button(
-      href='/current_jobs'
-      hx-get="/current_jobs"
-      hx-target='#current_jobs'
+      href='/'
+      hx-get="/"
+      hx-target='#content'
       hx-push-url="false"
     ).prose.font-semibold.text-neutral.border-b-2.border-neutral.p-1 All companies
   else 
     button(
-      href='/current_jobs'
-      hx-get="/current_jobs"
-      hx-target='#current_jobs'
+      href='/'
+      hx-get="/"
+      hx-target='#content'
       hx-push-url="false"
     ).prose.text-neutral.border-b-2.border-transparent.p-1 All companies
   each company in companies
@@ -18,13 +18,13 @@ div.flex.gap-6.mb-6.justify-center
       button(
         href=company.url
         hx-get=company.url
-        hx-target='#current_jobs'
+        hx-target='#content'
         hx-push-url="false"
       ).prose.font-semibold.text-neutral.border-b-2.border-neutral.p-1= company.name
     else 
       button(
         href=company.url
         hx-get=company.url
-        hx-target='#current_jobs'
+        hx-target='#content'
           hx-push-url="false"
         ).prose.text-neutral.border-b-2.border-transparent.p-1= company.name
