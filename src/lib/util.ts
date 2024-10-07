@@ -74,7 +74,7 @@ export function getUniqueCompanies(
     if (found_company_array.length === 0) {
       unique_companies.push({
         name: job.company,
-        url: `/current_jobs?company=${job.company}`,
+        url: `/?company=${job.company}`,
       });
     }
   });
