@@ -4,14 +4,14 @@ div.flex.gap-6.mb-6.justify-center
       href='/'
       hx-get="/"
       hx-target='#content'
-      hx-push-url="false"
+      hx-push-url="true"
     ).prose.font-semibold.text-neutral.border-b-2.border-neutral.p-1 All companies
   else 
     button(
       href='/'
       hx-get="/"
       hx-target='#content'
-      hx-push-url="false"
+      hx-push-url="true"
     ).prose.text-neutral.border-b-2.border-transparent.p-1 All companies
   each company in companies
     if filter === company.name
@@ -19,12 +19,12 @@ div.flex.gap-6.mb-6.justify-center
         href=company.url
         hx-get=company.url
         hx-target='#content'
-        hx-push-url="false"
+        hx-push-url="true"
       ).prose.font-semibold.text-neutral.border-b-2.border-neutral.p-1= company.name
     else 
       button(
         href=company.url
         hx-get=company.url
         hx-target='#content'
-          hx-push-url="false"
+          hx-push-url="true"
         ).prose.text-neutral.border-b-2.border-transparent.p-1= company.name
