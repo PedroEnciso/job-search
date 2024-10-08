@@ -49,7 +49,6 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
   }
 
   async function sign_in_cheat() {
-    console.log("Signing in...");
     const { data, error } = await supabase_user.auth.signInWithPassword({
       email: "ped.enciso@gmail.com",
       password: "#1keeper",
@@ -64,7 +63,6 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
   }
 
   async function sign_out() {
-    console.log("Signing out...");
     const { error } = await supabase_user.auth.signOut();
 
     if (error) {
@@ -73,11 +71,20 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
     }
   }
 
+  async function sign_up(email: string, password: string) {
+    const { data, error } = await supabase_user.auth.signUp({
+      email,
+      password,
+    });
+
+    return { data, error };
+  }
+
   async function get_user() {
     return supabase_user.auth.getUser();
   }
 
-  return { sign_in, sign_in_cheat, sign_out, get_user };
+  return { sign_in, sign_in_cheat, sign_out, get_user, sign_up };
 }
 
 export default SUPABASE_USER_CLASS;
@@ -103,4 +110,19 @@ export interface Supabase_User {
   }>;
   sign_out: () => Promise<void>;
   get_user: () => Promise<UserResponse>;
+  sign_up: (
+    email: string,
+    password: string
+  ) => Promise<{
+    data:
+      | {
+          user: User | null;
+          session: Session | null;
+        }
+      | {
+          user: null;
+          session: null;
+        };
+    error: AuthError | null;
+  }>;
 }
