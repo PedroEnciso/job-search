@@ -14,19 +14,26 @@ html(data-theme="pastel")
     script(src="https://unpkg.com/htmx.org@2.0.2", integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ", crossorigin="anonymous")
 
   body.bg-base-200.repeating-dot-background
-    header.prose.prose-a__no-underline.py-6.w-11_12.max-w-4xl.mx-auto
+    header.prose.prose-a__no-underline.py-6.w-11_12.max-w-4xl.mx-auto.flex.justify-between
       h1.mb-0.prose.prose-lg
         a(
           href='/'
           hx-get='/'
           hx-target='#content'
-          hx-push-url=true
+          hx-push-url="true"
         ) Job Scout
+      button.btn.btn-primary(
+        hx-get='/logout'
+        hx-target='#content'
+        hx-push-url="login"
+      ) Logout
 
     main#content.w-11_12.mt-8.max-w-5xl.mx-auto
       case content 
         when 'login'
           include auth/login.pug
+        when 'sign up'
+          include auth/signup.pug
         when 'error'
           include error.pug
         when 'current jobs'
