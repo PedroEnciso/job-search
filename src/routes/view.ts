@@ -9,5 +9,8 @@ view_router.get("/", checkForUser, view_controller.get_index);
 // login
 view_router.get("/login", checkForUser, auth_controller.get_login);
 view_router.post("/login", auth_controller.post_login);
+// sign up
+view_router.get("/sign-up", checkForUser, auth_controller.get_sign_up);
+view_router.post("/sign-up", auth_controller.post_sign_up);
 // logout
 view_router.get("/logout", auth_controller.get_logout);
