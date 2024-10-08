@@ -5,8 +5,6 @@ import SUPABASE_USER_CLASS from "../lib/supabase_user";
 // GET /login
 const get_login = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("getting login");
-
     if (req.headers["hx-target"]) {
       res.render("auth/login");
     } else {
@@ -16,7 +14,6 @@ const get_login = expressAsyncHandler(
 );
 // POST /login
 async function post_login(req: Request, res: Response, next: NextFunction) {
-  console.log("post login", req.body);
   try {
     // get validated email and password
     const { email, password } = validateLoginRequest(req.body);
@@ -26,11 +23,9 @@ async function post_login(req: Request, res: Response, next: NextFunction) {
 
     if (error) {
       // unsuccessful login, notify user
-      setTimeout(() => {
-        res.render("auth/login", {
-          error: error.message,
-        });
-      }, 5000);
+      res.render("auth/login", {
+        error: error.message,
+      });
     } else {
       // success, load current jobs
       res.redirect("/");
@@ -50,7 +45,6 @@ async function post_login(req: Request, res: Response, next: NextFunction) {
 
 const get_logout = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("logging out");
     const supabase_user = SUPABASE_USER_CLASS(req, res);
     await supabase_user.sign_out();
     if (req.headers["hx-target"]) {
@@ -61,10 +55,49 @@ const get_logout = expressAsyncHandler(
   }
 );
 
+function get_sign_up(req: Request, res: Response, next: NextFunction) {
+  if (req.headers["hx-target"]) {
+    res.render("auth/signup");
+  } else {
+    res.render("index", { content: "sign up" });
+  }
+}
+
+async function post_sign_up(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, password } = validateSignupRequest(req.body);
+    const supabase_user = SUPABASE_USER_CLASS(req, res);
+    const { error } = await supabase_user.sign_up(email, password);
+
+    if (error) {
+      console.log("supa error:", error);
+      // unsuccessful sign up, notify user
+      res.render("auth/signup", {
+        error: error.message,
+      });
+    } else {
+      // success, load current jobs
+      res.redirect("/");
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "There was an error signing you up. Please try again.";
+    if (req.headers["hx-target"]) {
+      res.render("auth/signup", { error: message });
+    } else {
+      res.render("index", { content: "sign up", error: message });
+    }
+  }
+}
+
 export default {
   get_login,
   post_login,
   get_logout,
+  get_sign_up,
+  post_sign_up,
 };
 
 function validateLoginRequest(request: LoginRequest | {}): {
@@ -83,7 +116,7 @@ function validateLoginRequest(request: LoginRequest | {}): {
       email = request.email;
       if (!email) {
         throw new Error("Email is not defined.");
-      } else if (!validateEmail) {
+      } else if (!validateEmail(email)) {
         throw new Error();
       }
     } else {
@@ -93,15 +126,33 @@ function validateLoginRequest(request: LoginRequest | {}): {
     if ("current-password" in request) {
       password = request["current-password"] as string;
       if (!password) {
-        console.log("check 1 password:", password);
         throw new Error("Password is not defined.");
       } else if (password.length < 6) {
         throw new Error("Password must be 6 or more characters.");
       }
     } else {
-      console.log("check 2 password:", password);
       throw new Error("Password is not defined.");
     }
+  }
+  return { email, password };
+}
+
+function validateSignupRequest(request: LoginRequest | {}) {
+  const { email, password } = validateLoginRequest(request);
+  // password and email are validated
+  // validate that confirm-password was included and is the same as password
+  let confirm_password: string | undefined = undefined;
+  if ("confirm-password" in request) {
+    confirm_password = request["confirm-password"] as string;
+    if (!confirm_password) {
+      // throw an error if confirm-password was not included
+      throw new Error("Please confirm your password.");
+    } else if (confirm_password !== password) {
+      // throw an error if confirm-password and password do not match
+      throw new Error("Passwords do not match.");
+    }
+  } else {
+    throw new Error("Please confirm your password.");
   }
   return { email, password };
 }
@@ -109,6 +160,7 @@ function validateLoginRequest(request: LoginRequest | {}): {
 interface LoginRequest {
   email?: string;
   password?: string;
+  confirm_password?: string;
 }
 
 function validateEmail(email: string) {
