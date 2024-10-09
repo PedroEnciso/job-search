@@ -1,0 +1,20 @@
+div#company_content.w-4_5.mx-auto
+  if company_content === "new"
+      include new_company_form.pug
+  else 
+    h2.prose.prose-2xl.text-center.mb-6 Your companies
+    div.flex.justify-end
+      button.btn.btn-secondary.rounded.py-2.h-fit.min-h-fit(
+        hx-get="companies/new"
+        hx-target="#company_content"
+        hx-push-url="true"
+      ) + New
+    ul.flex.flex-col.gap-4
+      each company in companies
+        li.prose
+          h3.mb-0= company.name
+          a(
+            href=company.jobs_url
+            target="_blank"
+            rel="noopener"
+          ) View jobs page
