@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getUserCurrentJobs } from "../db/queries";
+import { getUserCompanies, getUserCurrentJobs } from "../db/queries";
 import type { Supabase_User_Request } from "../middleware/checkForUser";
 import { getUniqueCompanies } from "../lib/util";
 
@@ -45,6 +45,7 @@ async function get_index(req: Request, res: Response, next: NextFunction) {
         jobs: frontend_jobs,
         filter: company_filter,
         companies: unique_companies,
+        sidebar: "Current openings",
         error: error_message,
       });
     } else {
@@ -53,6 +54,7 @@ async function get_index(req: Request, res: Response, next: NextFunction) {
         jobs: frontend_jobs,
         filter: company_filter,
         companies: unique_companies,
+        sidebar: "Current openings",
         error: error_message,
       });
     }
@@ -60,9 +62,52 @@ async function get_index(req: Request, res: Response, next: NextFunction) {
     console.log("Error at GET /current_jobs", error);
     res.render("current_jobs", {
       jobs: [],
+      sidebar: "Current openings",
       error: "There was an error fetching your jobs. Please refresh the page.",
     });
   }
 }
 
-export default { get_index };
+async function get_companies(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user_id = req.supabase_user?.user_id;
+    if (!user_id) {
+      res.redirect("/login");
+    } else {
+      const user_companies = await getUserCompanies(user_id);
+      if (req.headers["hx-target"]) {
+        res.render("companies/companies", {
+          companies: user_companies,
+          company_content: "companies",
+        });
+      } else {
+        res.render("index", {
+          content: "companies",
+          sidebar: "Companies",
+          companies: user_companies,
+        });
+      }
+    }
+  } catch (error) {
+    console.log("error getting companies");
+  }
+}
+
+async function get_new_company(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.headers["hx-target"]) {
+    res.render("companies/new_company_form", { company_content: "new" });
+  } else {
+    console.log("help");
+    res.render("index", {
+      content: "companies",
+      sidebar: "Companies",
+      company_content: "new",
+    });
+  }
+}
+
+export default { get_index, get_companies, get_new_company };
