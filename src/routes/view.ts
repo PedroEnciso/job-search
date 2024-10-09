@@ -6,6 +6,14 @@ export const view_router = express.Router();
 
 // index
 view_router.get("/", checkForUser, view_controller.get_index);
+// companies
+view_router.get("/companies", checkForUser, view_controller.get_companies);
+view_router.get(
+  "/companies/new",
+  checkForUser,
+  view_controller.get_new_company
+);
+//// AUTH ROUTES
 // login
 view_router.get("/login", checkForUser, auth_controller.get_login);
 view_router.post("/login", auth_controller.post_login);
