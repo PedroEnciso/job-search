@@ -3,7 +3,53 @@ module.exports = {
   separator: "__",
   plugins: [require("daisyui"), require("@tailwindcss/typography")],
   daisyui: {
-    themes: ["pastel"],
+    themes: [
+      "pastel",
+      {
+        wise: {
+          // custom - lime green
+          primary: "#9fe870",
+          // custom - dark green
+          "primary-content": "#163300",
+          // custom - dark green
+          secondary: "#163300",
+          // custom - lime green
+          "secondary-content": "#9fe870",
+          // custom - light blue
+          accent: "#a0e1e1",
+          // custom - dark grey
+          "accent-content": "#21231d",
+          // custom - light gray, idk what for
+          neutral: "#e8ebe6",
+          // default
+          "neutral-content": "#c6dbff",
+          // custom
+          "base-100": "#ffffff",
+          // custom - very light grey
+          "base-200": "#16330014",
+          // lighter-grey, secondary text
+          "base-300": "#454745",
+          // custom
+          "base-content": "#0e0f0c",
+          // default
+          info: "#0000ff",
+          // default
+          "info-content": "#c6dbff",
+          // default
+          success: "#00ff00",
+          // default
+          "success-content": "#001600",
+          // default
+          warning: "#00ff00",
+          // default
+          "warning-content": "#001600",
+          // default
+          error: "#ff0000",
+          // default
+          "error-content": "#160000",
+        },
+      },
+    ],
   },
   theme: {
     width: (theme) => ({
