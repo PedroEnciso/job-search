@@ -1,0 +1,35 @@
+- const tabs = [{title: "Current openings", url: "/"}, {title: "Companies", url: "/companies"}, {title: "Keywords", url: "/keywords"}]
+
+header
+  div.prose.prose-a__no-underline.py-6.w-11_12.max-w-4xl.mx-auto.flex.justify-between
+    nav.flex.items-center.gap-6
+      h1.mb-0.prose.prose-lg.h-fit
+        a(
+          href='/'
+          hx-get='/'
+          hx-target='body'
+          hx-push-url="true"
+        ) Job Scout
+      ul.flex.gap-6.m-0.list-none
+        each tab in tabs
+          if tab.title === page
+            li.prose-sm.pl-0.font-medium.border-b.border-b-secondary
+              a.text-secondary(
+                href=tab.url
+                hx-get=tab.url
+                hx-target="#body"
+                hx-push-url="true"
+              )= tab.title
+          else
+            li.prose-sm.pl-0.border-b.border-b-transparent.hover__border-b-secondary
+              a.hover__text-secondary(
+                href=tab.url
+                hx-get=tab.url
+                hx-target="#body"
+                hx-push-url="true"
+              )= tab.title
+    a.prose-sm.text-secondary.hover__text-error.cursor-pointer(
+      hx-get='/logout'
+      hx-target='#content'
+      hx-push-url="login"
+    ) Logout

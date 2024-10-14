@@ -1,12 +1,24 @@
-li.relative.z-10
-  div.py-2.px-4.flex.flex-col.gap-2.bg-white.rounded-md
-    div.flex.flex-col.gap-2.md__gap-4.md__flex-row.md__items-center
-      p.prose.prose-xl.mb-0
-        strong= job.title
-      div
-        p.half-highlight.inline-block= job.company
-    div.flex.justify-between.items-end
-      p.prose.prose-sm Found on 
-        span=job.found_at
-      a.font-medium.text-neutral.pl-4.md__pr-4(href=job.job_url target="_blank" rel="noopener") View
-  span.block.absolute.-left-2.-bottom-2.top-1.right-1.bg-accent.behind.rounded-md
+//- li.relative.z-10
+//-   div.py-2.px-4.flex.flex-col.gap-2.bg-white.rounded-md
+//-     div.flex.flex-col.gap-2.md__gap-4.md__flex-row.md__items-center
+//-       p.prose.prose-xl.mb-0
+//-         strong= job.title
+//-       div
+//-         p.half-highlight.inline-block= job.company
+//-     div.flex.justify-between.items-end
+//-       p.prose.prose-sm Found on 
+//-         span=job.found_at
+//-       a.font-medium.text-neutral.pl-4.md__pr-4(href=job.job_url target="_blank" rel="noopener") View
+//-   span.block.absolute.-left-2.-bottom-2.top-1.right-1.bg-accent.behind.rounded-md
+
+li.flex.flex-col.gap-1.bg-secondary
+  div.flex.flex-col.gap-2.md__gap-4.md__flex-row.md__items-center
+    a.prose.prose-xl.mb-0.font-semibold.text-primary.hover__underline(
+      href=job.job_url target="_blank" rel="noopener"
+    )= job.title
+    div
+      p.prose.prose-lg.pt-0.inline-block.text-neutral= job.company
+  div.flex.justify-between.items-end
+    p.prose.prose-sm.text-neutral Found on 
+      span=job.found_at
+    //- a.btn.btn-primary.ml-4.md__mr-4.py-2.px-4.min-h-0.h-fit(href=job.job_url target="_blank" rel="noopener") View
