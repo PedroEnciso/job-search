@@ -1,5 +1,5 @@
 doctype html
-html(data-theme="pastel")
+html(data-theme="wise")
   head
     meta(charset='UTF-8')
     meta(name='viewport', content="width=device-width, initial-scale=1" )
@@ -13,22 +13,10 @@ html(data-theme="pastel")
 
     script(src="https://unpkg.com/htmx.org@2.0.2", integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ", crossorigin="anonymous")
 
-  body.bg-base-200.repeating-dot-background.flex.flex-col
-    header.prose.prose-a__no-underline.py-6.w-11_12.max-w-4xl.mx-auto.flex.justify-between
-      h1.mb-0.prose.prose-lg
-        a(
-          href='/'
-          hx-get='/'
-          hx-target='#content'
-          hx-push-url="true"
-        ) Job Scout
-      button.btn.btn-primary(
-        hx-get='/logout'
-        hx-target='#content'
-        hx-push-url="login"
-      ) Logout
-    main.w-11_12.mt-8.max-w-6xl.mx-auto.grow.flex.gap-2
-      include sidebar.pug
+  body#body.flex.flex-col
+    include header.pug
+    main.w-11_12.mt-8.max-w-4xl.mx-auto.grow.flex.gap-2
+      //- include sidebar.pug
       div#content.grow
         case content 
           when 'login'
@@ -41,3 +29,5 @@ html(data-theme="pastel")
             include current_jobs/current_jobs.pug
           when 'companies'
             include companies/companies.pug
+          when 'new company'
+            include companies/new_company_form.pug
