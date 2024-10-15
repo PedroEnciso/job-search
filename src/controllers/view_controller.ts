@@ -5,6 +5,7 @@ import {
   createNewUserCompany,
   getUserCompanies,
   getUserCurrentJobs,
+  getUserKeywords,
 } from "../db/queries";
 import type { Supabase_User_Request } from "../middleware/checkForUser";
 import { getUniqueCompanies } from "../lib/util";
@@ -163,7 +164,39 @@ async function post_new_company(
   }
 }
 
-export default { get_index, get_companies, get_new_company, post_new_company };
+async function get_keywords(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user_id = req.supabase_user?.user_id;
+    if (!user_id) {
+      res.redirect("/login");
+    } else {
+      const user_keywords = await getUserKeywords(user_id);
+      if (req.headers["hx-target"]) {
+        res.render("index", {
+          page: "Keywords",
+          content: "keywords",
+          keywords: user_keywords,
+        });
+      } else {
+        res.render("index", {
+          page: "Keywords",
+          content: "keywords",
+          keywords: user_keywords,
+        });
+      }
+    }
+  } catch (error) {
+    console.log("error getting keywords");
+  }
+}
+
+export default {
+  get_index,
+  get_companies,
+  get_new_company,
+  post_new_company,
+  get_keywords,
+};
 
 function validateNewCompanyRequest(body: NewCompanyRequest) {
   const { company_name, company_url } = body;
