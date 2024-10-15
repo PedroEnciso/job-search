@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { getUserCompanies, getUserCurrentJobs } from "../db/queries";
+import {
+  checkIfCompanyExists,
+  createNewCompany,
+  createNewUserCompany,
+  getUserCompanies,
+  getUserCurrentJobs,
+} from "../db/queries";
 import type { Supabase_User_Request } from "../middleware/checkForUser";
 import { getUniqueCompanies } from "../lib/util";
 
@@ -32,7 +38,7 @@ async function get_index(req: Request, res: Response, next: NextFunction) {
     });
     // get companies
     const unique_companies = getUniqueCompanies(frontend_jobs);
-    // filter companies based on company query param
+    // filter companies based on company query param and render
     if (company_filter) {
       frontend_jobs = frontend_jobs.filter(
         (job) => job.company === company_filter
@@ -41,20 +47,21 @@ async function get_index(req: Request, res: Response, next: NextFunction) {
 
     // render frontend
     if (req.headers["hx-target"]) {
-      res.render("current_jobs/current_jobs", {
-        jobs: frontend_jobs,
-        filter: company_filter,
-        companies: unique_companies,
-        sidebar: "Current openings",
-        error: error_message,
-      });
-    } else {
       res.render("index", {
+        page: "Current openings",
         content: "current jobs",
         jobs: frontend_jobs,
         filter: company_filter,
         companies: unique_companies,
-        sidebar: "Current openings",
+        error: error_message,
+      });
+    } else {
+      res.render("index", {
+        page: "Current openings",
+        content: "current jobs",
+        jobs: frontend_jobs,
+        filter: company_filter,
+        companies: unique_companies,
         error: error_message,
       });
     }
@@ -76,14 +83,15 @@ async function get_companies(req: Request, res: Response, next: NextFunction) {
     } else {
       const user_companies = await getUserCompanies(user_id);
       if (req.headers["hx-target"]) {
-        res.render("companies/companies", {
+        res.render("index", {
+          page: "Companies",
+          content: "companies",
           companies: user_companies,
-          company_content: "companies",
         });
       } else {
         res.render("index", {
+          page: "Companies",
           content: "companies",
-          sidebar: "Companies",
           companies: user_companies,
         });
       }
@@ -99,15 +107,74 @@ async function get_new_company(
   next: NextFunction
 ) {
   if (req.headers["hx-target"]) {
-    res.render("companies/new_company_form", { company_content: "new" });
+    res.render("companies/new_company_form");
   } else {
-    console.log("help");
     res.render("index", {
-      content: "companies",
-      sidebar: "Companies",
-      company_content: "new",
+      page: "companies",
+      content: "new company",
     });
   }
 }
 
-export default { get_index, get_companies, get_new_company };
+async function post_new_company(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  // make sure user is logged in
+  const user_id = req.supabase_user?.user_id;
+  if (!user_id) {
+    res.redirect("/login");
+  } else {
+    let error: string | null = null;
+    // get the name and title of the new company from the request
+    const { company_name, company_url } = validateNewCompanyRequest(req.body);
+    // check to make sure the user does not have more than 5 companies listed
+    const user_companies = await getUserCompanies(user_id);
+    // THIS IS WHERE THE USER'S SUBSCRIPTION WILL BE CHECKED
+    const ARBITRARY_COMPANY_COUNT = 5;
+    const is_active = user_companies.length >= ARBITRARY_COMPANY_COUNT;
+    if (user_companies.length >= ARBITRARY_COMPANY_COUNT) {
+      // user has too many companies
+      // idk if i will send this or just add a new company as inactive
+      error =
+        "Adding this company would exceed your subscription limit. This company will be added as inactive.";
+    }
+    // add the company to db if they have less than 5
+    // check if this company exists in the db already
+    let company_id: number;
+    const company = await checkIfCompanyExists(company_name, company_url);
+    if (!company) {
+      console.log("company has not been created yet");
+      // company has not yet been added to db, add it
+      const new_company = await createNewCompany(company_name, company_url);
+      company_id = new_company[0].id;
+      console.log("new company", new_company);
+    } else {
+      console.log("company has been created");
+      // company does exist, get its id
+      company_id = company.id;
+    }
+    // TODO: Add a check to see if this user has this company already
+    //// i could add that into the else statement above
+    // add a row to user_companies
+    await createNewUserCompany(user_id, company_id, is_active);
+    res.redirect("/companies");
+  }
+}
+
+export default { get_index, get_companies, get_new_company, post_new_company };
+
+function validateNewCompanyRequest(body: NewCompanyRequest) {
+  const { company_name, company_url } = body;
+  if (company_name && company_url) {
+    return { company_name, company_url };
+  } else {
+    throw new Error("Not enough information.");
+  }
+}
+
+interface NewCompanyRequest {
+  company_name?: string;
+  company_url?: string;
+}
