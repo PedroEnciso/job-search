@@ -2,9 +2,11 @@ import { db } from ".";
 import { and, desc, eq, notInArray } from "drizzle-orm";
 import {
   batchRequestTable,
+  companyTable,
   current_jobs,
   jobTable,
   match_records,
+  user_companies,
   user_jobs,
   users,
 } from "./schema";
@@ -264,5 +266,38 @@ export async function bulkAddCurrentJobs(jobs: NewCurrentJob[]) {
     await db.insert(current_jobs).values(jobs);
   } catch (error) {
     throw new Error(getErrorMessage(error, "getUserCurrentJobs"));
+  }
+}
+
+export async function checkIfCompanyExists(name: string, url: string) {
+  try {
+    return await db.query.companyTable.findFirst({
+      where: and(eq(companyTable.name, name), eq(companyTable.jobs_url, url)),
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "checkIfCompanyExists"));
+  }
+}
+
+export async function createNewCompany(name: string, url: string) {
+  try {
+    return await db
+      .insert(companyTable)
+      .values({ jobs_url: url, name })
+      .returning();
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createNewCompany"));
+  }
+}
+
+export async function createNewUserCompany(
+  user_id: string,
+  company_id: number,
+  is_active: boolean
+) {
+  try {
+    await db.insert(user_companies).values({ user_id, company_id });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createNewUserCompany"));
   }
 }
