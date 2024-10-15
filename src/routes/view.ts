@@ -18,6 +18,9 @@ view_router.post(
   checkForUser,
   view_controller.post_new_company
 );
+// keywords
+view_router.get("/keywords", checkForUser, view_controller.get_keywords);
+
 //// AUTH ROUTES
 // login
 view_router.get("/login", checkForUser, auth_controller.get_login);
