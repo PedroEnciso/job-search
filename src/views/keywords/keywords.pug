@@ -1,0 +1,14 @@
+div.relative
+  h2.prose.prose-2xl.font-medium.text-center.text-base-content.mb-4 Your keywords
+  button.absolute.top-1.right-0.btn.bg-accent-content.text-accent.rounded.py-2.h-fit.min-h-fit(
+  hx-get="keywords/new"
+  hx-target="#content"
+  hx-push-url="true"
+) + New
+ul.flex.gap-8.bg-accent.rounded-xl.py-10.px-8
+  each keyword in keywords
+    li.prose 
+      h3.prose-xl.mb-0= keyword
+      button remove
+
+
