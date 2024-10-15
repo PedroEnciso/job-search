@@ -1,24 +1,21 @@
-div#company_content.relative
-  if company_content === "new"
-      include new_company_form.pug
-  else 
-    h2.prose.prose-2xl.font-medium.text-center.text-base-content.mb-4 Your companies
-    button.absolute.top-1.right-0.btn.btn-secondary.rounded.py-2.h-fit.min-h-fit(
-      hx-get="companies/new"
-      hx-target="#company_content"
-      hx-push-url="true"
-    ) + New
-    ul.flex.flex-col.gap-8.bg-primary.rounded-xl.py-10.px-8
-      each company in companies
-        li.prose.w-full.max-w-full.flex.justify-between.items-center
-          div
-            h3.my-0= company.name
-            a(
-              href=company.jobs_url
-              target="_blank"
-              rel="noopener"
-            ) View jobs page
-          div.flex.gap-4
-            a() Deactivate
-            a() Delete
+div.relative
+  h2.prose.prose-2xl.font-medium.text-center.text-base-content.mb-4 Your companies
+  button.absolute.top-1.right-0.btn.btn-secondary.rounded.py-2.h-fit.min-h-fit(
+    hx-get="companies/new"
+    hx-target="#content"
+    hx-push-url="true"
+  ) + New
+ul.flex.flex-col.gap-8.bg-primary.rounded-xl.py-10.px-8
+  each company in companies
+    li.prose.w-full.max-w-full.flex.justify-between.items-center
+      div
+        h3.my-0= company.name
+        a(
+          href=company.jobs_url
+          target="_blank"
+          rel="noopener"
+        ) View jobs page
+      div.flex.gap-4
+        a() Deactivate
+        a() Delete
 
