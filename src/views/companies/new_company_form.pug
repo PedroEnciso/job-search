@@ -1,21 +1,28 @@
-h2.prose.prose-2xl.text-center.mb-6 New company
-a(
-  href="/companies"
-  hx-get="/companies"
-  hx-target="#company_content"
-  hx-push-url="true"
-) Back to companies
-div.bg-white.py-8.px-6.rounded-md
-  form.flex.flex-col.gap-4
+div.relative
+  h2.prose.prose-2xl.font-medium.text-center.text-base-content.mb-4 New company
+  a.absolute.top-1.left-0.prose.prose-sm(
+    href="/companies"
+    hx-get="/companies"
+    hx-target="#body"
+    hx-push-url="true"
+  ) < Back to companies
+div.bg-primary.rounded-xl.py-10.px-8
+  form.flex.flex-col.gap-4(
+    hx-post='/companies/new',
+    hx-trigger="submit",
+    hx-target="#body",
+    hx-push-url="/companies"
+    hx-disabled-elt="#submit"
+  )
     label.form-control.w-full
       div.label.pt-0.pb-2
-        span.label-text.font-medium.prose.prose-md.m-0 Company name
+        span.label-text.font-medium.prose.prose-md.m-0.text-base-content Company name
       input.input.input-bordered.w-full.rounded#company_name(type="text", placeholder="Company", required, name="company_name", hx-preserve)
     label.form-control.w-full
       div.label.pt-0.pb-2
-        span.label-text.font-medium.prose.prose-md.m-0 Career page URL
+        span.label-text.font-medium.prose.prose-md.m-0.text-base-content Career page URL
       input.input.input-bordered.w-full.rounded#company_url(type="text", placeholder="https://company.com/careers", required, name="company_url", hx-preserve)
-      button#submit.relative.btn.btn-primary.rounded Submit company
-        div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
-          span.loading.loading-spinner.loading-sm 
-          p Authenticating... 
+    button#submit.relative.btn.btn-secondary.rounded Submit company
+      div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
+        span.loading.loading-spinner.loading-sm 
+        p Creating company
