@@ -13,6 +13,11 @@ view_router.get(
   checkForUser,
   view_controller.get_new_company
 );
+view_router.post(
+  "/companies/new",
+  checkForUser,
+  view_controller.post_new_company
+);
 //// AUTH ROUTES
 // login
 view_router.get("/login", checkForUser, auth_controller.get_login);
