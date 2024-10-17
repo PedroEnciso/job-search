@@ -9,6 +9,7 @@ import {
 } from "../db/queries";
 import type { Supabase_User_Request } from "../middleware/checkForUser";
 import { getUniqueCompanies } from "../lib/util";
+import { check } from "express-validator";
 
 async function get_index(req: Request, res: Response, next: NextFunction) {
   let company_filter = (req.query.company as string) || "";
@@ -122,14 +123,12 @@ async function post_new_company(
   res: Response,
   next: NextFunction
 ) {
-  // make sure user is logged in
-  const user_id = req.supabase_user?.user_id;
-  if (!user_id) {
-    res.redirect("/login");
-  } else {
+  try {
+    // make sure user is logged in
+    const { user_id } = req.supabase_user as Supabase_User_Request;
     let error: string | null = null;
     // get the name and title of the new company from the request
-    const { company_name, company_url } = validateNewCompanyRequest(req.body);
+    const { company_name, company_url } = await validateNewCompanyRequest(req);
     // check to make sure the user does not have more than 5 companies listed
     const user_companies = await getUserCompanies(user_id);
     // THIS IS WHERE THE USER'S SUBSCRIPTION WILL BE CHECKED
@@ -161,29 +160,33 @@ async function post_new_company(
     // add a row to user_companies
     await createNewUserCompany(user_id, company_id, is_active);
     res.redirect("/companies");
+  } catch (error) {
+    // render error
+    res.render("index", {
+      page: "companies",
+      content: "new company",
+      error,
+    });
   }
 }
 
 async function get_keywords(req: Request, res: Response, next: NextFunction) {
   try {
-    const user_id = req.supabase_user?.user_id;
-    if (!user_id) {
-      res.redirect("/login");
+    const { user_id } = req.supabase_user as Supabase_User_Request;
+
+    const user_keywords = await getUserKeywords(user_id);
+    if (req.headers["hx-target"]) {
+      res.render("index", {
+        page: "Keywords",
+        content: "keywords",
+        keywords: user_keywords,
+      });
     } else {
-      const user_keywords = await getUserKeywords(user_id);
-      if (req.headers["hx-target"]) {
-        res.render("index", {
-          page: "Keywords",
-          content: "keywords",
-          keywords: user_keywords,
-        });
-      } else {
-        res.render("index", {
-          page: "Keywords",
-          content: "keywords",
-          keywords: user_keywords,
-        });
-      }
+      res.render("index", {
+        page: "Keywords",
+        content: "keywords",
+        keywords: user_keywords,
+      });
     }
   } catch (error) {
     console.log("error getting keywords");
@@ -222,16 +225,32 @@ export default {
   post_new_keywords,
 };
 
-function validateNewCompanyRequest(body: NewCompanyRequest) {
-  const { company_name, company_url } = body;
-  if (company_name && company_url) {
-    return { company_name, company_url };
-  } else {
-    throw new Error("Not enough information.");
+async function validateNewCompanyRequest(req: Request) {
+  // validate and sanitize company_name
+  const name_result = await check("company_name")
+    .trim()
+    .notEmpty()
+    .escape()
+    .withMessage("Company name field is invalid")
+    .run(req);
+  // check for errors
+  if (!name_result.isEmpty()) {
+    throw new Error(name_result.context.errors[0].msg);
   }
-}
-
-interface NewCompanyRequest {
-  company_name?: string;
-  company_url?: string;
+  // validate and sanitize company_url
+  const url_result = await check("company_url")
+    .trim()
+    .notEmpty()
+    .isURL()
+    .withMessage("Career page URL field is invalid")
+    .run(req);
+  // check for errors
+  if (!url_result.isEmpty()) {
+    console.log(url_result);
+    throw new Error(url_result.context.errors[0].msg);
+  }
+  // body is validated, get values as string and return
+  const company_name = req.body.company_name as string;
+  const company_url = req.body.company_url as string;
+  return { company_name, company_url };
 }
