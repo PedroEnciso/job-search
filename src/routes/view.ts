@@ -20,7 +20,16 @@ view_router.post(
 );
 // keywords
 view_router.get("/keywords", checkForUser, view_controller.get_keywords);
-
+view_router.get(
+  "/keywords/new",
+  checkForUser,
+  view_controller.get_new_keywords
+);
+view_router.post(
+  "/keywords/new",
+  checkForUser,
+  view_controller.post_new_keywords
+);
 //// AUTH ROUTES
 // login
 view_router.get("/login", checkForUser, auth_controller.get_login);
