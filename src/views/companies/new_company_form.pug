@@ -26,3 +26,5 @@ div.bg-primary.rounded-xl.py-10.px-8
       div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
         span.loading.loading-spinner.loading-sm 
         p Creating company
+    if error
+      p.text-error= error
