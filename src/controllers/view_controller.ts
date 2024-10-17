@@ -190,12 +190,36 @@ async function get_keywords(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function get_new_keywords(req: Request, res: Response) {
+  let inputs = 1;
+  if (req.query.inputs) {
+    // user pressed "Add another keyword", increase input by one
+    inputs = parseInt(req.query.inputs as string) + 1;
+  }
+  if (req.headers["hx-target"]) {
+    res.render("keywords/new_keywords", { inputs });
+  } else {
+    res.render("index", {
+      page: "Keywords",
+      content: "new keywords",
+      inputs: 1,
+    });
+  }
+}
+
+async function post_new_keywords(req: Request, res: Response) {
+  console.log(req.body);
+  res.send("hell yea");
+}
+
 export default {
   get_index,
   get_companies,
   get_new_company,
   post_new_company,
   get_keywords,
+  get_new_keywords,
+  post_new_keywords,
 };
 
 function validateNewCompanyRequest(body: NewCompanyRequest) {
