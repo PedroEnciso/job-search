@@ -1,0 +1,34 @@
+- let subInputs = inputs - 2
+- let submitText = inputs > 1 ? "Submit keywords" : "Submit keyword"
+
+div.relative
+  h2.prose.prose-2xl.font-medium.text-center.text-base-content.mb-4 New Keywords
+  a.absolute.top-1.left-0.prose.prose-sm(
+    href="/keywords"
+    hx-get="/keywords"
+    hx-target="#body"
+    hx-push-url="true"
+  ) < Back to keywords
+div.bg-accent.rounded-xl.py-10.px-8
+  form#form.flex.flex-col.gap-4(
+    hx-post='/keywords/new',
+    hx-trigger="submit",
+    hx-target="#body",
+    hx-push-url="/keywords"
+    hx-disabled-elt="#submit"
+  )
+    - for (var index = 0; index < inputs; ++index) {
+      label.form-control.w-full
+        div.label.pt-0.pb-2
+          span.label-text.font-medium.prose.prose-md.m-0.text-accent-content Keyword #
+            span= index + 1 
+        input.input.input-bordered.w-full.rounded(id="keyword_"+index type="text", placeholder="Software engineer", required, name="keyword_"+index, hx-preserve)
+    - }
+    div.flex.justify-between
+      button(type="button", hx-get="/keywords/new?inputs="+inputs, hx-target="#content", hx-push-url='false').hover__text-secondary + Add another keyword
+      if inputs > 1
+        button(type="button", hx-get="/keywords/new?inputs="+subInputs, hx-target="#content", hx-push-url='false').hover__text-error - Remove a keyword
+    button#submit.relative.btn.bg-accent-content.text-accent.rounded= submitText
+      div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
+        span.loading.loading-spinner.loading-sm 
+        p Saving keywords
