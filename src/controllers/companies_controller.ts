@@ -36,7 +36,7 @@ async function get_companies(req: Request, res: Response) {
 
 async function get_new_company(req: Request, res: Response) {
   if (req.headers["hx-target"]) {
-    res.render("companies/new_company_form");
+    res.render("companies/new_company");
   } else {
     res.render("index", {
       page: "companies",
