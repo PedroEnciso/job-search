@@ -1,34 +1,43 @@
 import express from "express";
 import { checkForUser } from "../middleware/checkForUser";
-import { auth_controller, view_controller } from "../controllers";
+import {
+  auth_controller,
+  current_openings_controller,
+  companies_controller,
+  keywords_controller,
+} from "../controllers";
 
 export const view_router = express.Router();
 
 // index
-view_router.get("/", checkForUser, view_controller.get_index);
+view_router.get(
+  "/",
+  checkForUser,
+  current_openings_controller.get_current_openings
+);
 // companies
-view_router.get("/companies", checkForUser, view_controller.get_companies);
+view_router.get("/companies", checkForUser, companies_controller.get_companies);
 view_router.get(
   "/companies/new",
   checkForUser,
-  view_controller.get_new_company
+  companies_controller.get_new_company
 );
 view_router.post(
   "/companies/new",
   checkForUser,
-  view_controller.post_new_company
+  companies_controller.post_new_company
 );
 // keywords
-view_router.get("/keywords", checkForUser, view_controller.get_keywords);
+view_router.get("/keywords", checkForUser, keywords_controller.get_keywords);
 view_router.get(
   "/keywords/new",
   checkForUser,
-  view_controller.get_new_keywords
+  keywords_controller.get_new_keywords
 );
 view_router.post(
   "/keywords/new",
   checkForUser,
-  view_controller.post_new_keywords
+  keywords_controller.post_new_keywords
 );
 //// AUTH ROUTES
 // login
