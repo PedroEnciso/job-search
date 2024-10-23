@@ -8,13 +8,8 @@ RUN apt-get update && apt-get upgrade -y
 # This is where a normal Digital Ocean App Platform without Docker fails because you don't have root access
 RUN npx -y playwright@1.43.0 install --with-deps chromium
 
-# Set the working directory to /
-WORKDIR /
-
-# Get all dependencies and install
-COPY package*.json ./
-
-RUN npm install
+# Set the working directory to /app
+WORKDIR /app
 
 # Bundle your app source inside the docker image
 COPY . .
@@ -23,7 +18,7 @@ COPY . .
 RUN npm ci
 
 # Build step
-# RUN npm run build
+RUN npm run build
 
 EXPOSE 8080
 
