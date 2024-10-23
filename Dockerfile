@@ -11,11 +11,16 @@ RUN npx -y playwright@1.43.0 install --with-deps chromium
 # Set the working directory to /app
 WORKDIR /app
 
+# Get all dependencies and install
+COPY package*.json ./
+
+RUN npm install
+
 # Bundle your app source inside the docker image
 COPY . .
 
 # Install all the dependencies
-RUN npm ci
+# RUN npm ci
 
 RUN npm run build
 
