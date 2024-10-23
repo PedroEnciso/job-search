@@ -5,6 +5,7 @@ import SUPABASE_USER_CLASS from "../lib/supabase_user";
 // GET /login
 const get_login = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log("hello from login");
     if (req.headers["hx-target"]) {
       res.render("auth/login");
     } else {
