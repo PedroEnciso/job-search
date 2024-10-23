@@ -56,6 +56,7 @@ if (process.env.ENVIRONMENT === "DEVELOPMENT") {
     console.log("Running a scheduled job");
   });
 
+  console.log("Hello from index.ts");
   // cron.schedule("0 * * * *", () => {
   //   const date = new Date();
   //   console.log(
