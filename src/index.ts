@@ -52,6 +52,10 @@ if (process.env.ENVIRONMENT === "DEVELOPMENT") {
     botAPI.getJobs();
   });
 
+  cron.schedule("*/2 * * * *", () => {
+    console.log("Running a scheduled job");
+  });
+
   // cron.schedule("0 * * * *", () => {
   //   const date = new Date();
   //   console.log(
