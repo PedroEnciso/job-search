@@ -19,9 +19,22 @@ import {
 import openaiAPI from "../lib/openai";
 import type { BatchResponse, Job, NewCurrentJob } from "../types";
 import { dateIsTodayPST, containsJobWithin48Hours } from "../lib/util";
+import scraperAPI from "../lib/scraper";
 
 // create router
 export const botRouter = express.Router();
+
+botRouter.get("/jobs", async (req: Request, res: Response) => {
+  console.log("getting jobs");
+  try {
+    const htmlArray = scraperAPI.getHtmlFromJobPages([
+      "https://growtherapy.com/careers/",
+    ]);
+    console.log(htmlArray);
+  } catch (err) {
+    console.log("there was an error:", err);
+  }
+});
 
 // checks for completed batch requests, adds the responses to db
 botRouter.get("/batchResponse", async (req: Request, res: Response) => {
