@@ -23,7 +23,7 @@ COPY . .
 RUN npm ci
 
 # Build step
-RUN npm run build
+# RUN npm run build
 
 EXPOSE 8080
 
