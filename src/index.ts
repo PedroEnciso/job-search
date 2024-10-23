@@ -52,11 +52,6 @@ if (process.env.ENVIRONMENT === "DEVELOPMENT") {
     botAPI.getJobs();
   });
 
-  cron.schedule("*/2 * * * *", () => {
-    console.log("Running a scheduled job");
-  });
-
-  console.log("Hello from index.ts");
   // cron.schedule("0 * * * *", () => {
   //   const date = new Date();
   //   console.log(
@@ -65,6 +60,10 @@ if (process.env.ENVIRONMENT === "DEVELOPMENT") {
   //   botAPI.checkBatchResponse();
   // });
 }
+
+cron.schedule("*/2 * * * *", () => {
+  console.log("Running a scheduled job");
+});
 
 app.listen(port, () => {
   console.log(`[server]: Server is farting at http://localhost:${port}`);
