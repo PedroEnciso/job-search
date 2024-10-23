@@ -20,8 +20,9 @@ RUN npm install
 COPY . .
 
 # Install all the dependencies
-# RUN npm ci
+RUN npm ci
 
+# Build step
 RUN npm run build
 
 EXPOSE 8080
