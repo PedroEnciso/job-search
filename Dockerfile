@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/playwright:focal
 
 # Install Playwright with Dependencies and Chromium only 
 # This is where a normal Digital Ocean App Platform without Docker fails because you don't have root access
-# RUN npx -y playwright@1.43.0 install --with-deps chromium
+RUN npx -y playwright@latest install --with-deps chromium
 
 # Set the working directory to /app
 WORKDIR /app
