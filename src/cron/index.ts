@@ -156,6 +156,10 @@ const botAPI = {
         const latest_match_record = match_response_array[0];
         // check if there is a match record from today. Proceed if it is not from today
         if (!dateIsTodayPST(latest_match_record.created_at)) {
+          console.log(
+            "is date today?",
+            dateIsTodayPST(latest_match_record.created_at)
+          );
           // array that holds all jobs to be add to current jobs
           const jobs_for_current_jobs: NewCurrentJob[] = [];
           // get users from database
