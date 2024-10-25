@@ -45,6 +45,7 @@ export const batchRequestTable = pgTable("batch_request", {
     .$onUpdateFn(() => new Date()),
   status: batch_request_status_enum("status").notNull(),
   file_id: text("file_id").notNull(),
+  total_tokens: integer("total_tokens").default(0),
 });
 
 export const jobTable = pgTable("job", {
