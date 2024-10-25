@@ -29,6 +29,8 @@ div.bg-accent.rounded-xl.py-10.px-8
       if inputs > 1
         button(type="button", hx-get="/keywords/new?inputs="+subInputs, hx-target="#content", hx-push-url='false').hover__text-error - Remove a keyword
     button#submit.relative.btn.bg-accent-content.text-accent.rounded= submitText
-      div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
+      div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.justify-center.items-center
         span.loading.loading-spinner.loading-sm 
         p Saving keywords
+    if error
+      p.text-error= error
