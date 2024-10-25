@@ -93,6 +93,20 @@ export async function updateBatchRequestStatus(
   }
 }
 
+export async function updateBatchRequestTokens(
+  batch_request_id: string,
+  total_tokens: number
+) {
+  try {
+    await db
+      .update(batchRequestTable)
+      .set({ total_tokens })
+      .where(eq(batchRequestTable.id, batch_request_id));
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "updateBatchRequestTokens"));
+  }
+}
+
 export async function insertManyJobs(
   jobs: {
     title: string;
