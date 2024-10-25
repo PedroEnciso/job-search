@@ -37,6 +37,10 @@ app.set("view engine", "pug");
 
 // use routers
 app.use("/", view_router);
+// add bot router in development for testing
+if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+  app.use("/bot", botRouter);
+}
 
 // make public folder accessible
 app.use(express.static("public"));
