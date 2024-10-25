@@ -25,6 +25,8 @@ import { dateIsTodayPST } from "../lib/util";
 
 const botAPI = {
   async getJobs() {
+    const now = new Date();
+    console.log(`Getting jobs at ${now.toLocaleTimeString()}`);
     try {
       // get all companys
       const companies: Company[] = await getAllCompanies();
@@ -51,6 +53,8 @@ const botAPI = {
   },
 
   async checkBatchResponse() {
+    const now = new Date();
+    console.log(`Checking for batch responses at ${now.toLocaleTimeString()}`);
     try {
       // get the oldest batch request where status is not equal to failed, canceled, expired or completed
       const db_batch_request_array = await getOldestPendingBatchRequest();
@@ -139,6 +143,8 @@ const botAPI = {
   },
 
   async checkJobMatches() {
+    const now = new Date();
+    console.log(`Checking job matches at ${now.toLocaleTimeString()}`);
     try {
       // get the youngest completed batch request
       const response_array = await getYoungestCompletedBatchRequest();
