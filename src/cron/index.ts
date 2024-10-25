@@ -231,6 +231,8 @@ const botAPI = {
         } else {
           console.log("Matches have been made today");
         }
+      } else {
+        console.log("No batch request from today");
       }
     } catch (error) {
       console.log("Error in get matches");
