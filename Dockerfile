@@ -2,7 +2,7 @@
 FROM node:20
 
 # Get the latest version of Playwright
-FROM mcr.microsoft.com/playwright:focal
+#nFROM mcr.microsoft.com/playwright:focal
 
 # RUN apt-get update && apt-get upgrade -y
 
