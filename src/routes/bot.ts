@@ -27,7 +27,7 @@ export const botRouter = express.Router();
 botRouter.get("/jobs", async (req: Request, res: Response) => {
   console.log("getting jobs");
   try {
-    const htmlArray = scraperAPI.getHtmlFromJobPages([
+    const htmlArray = await scraperAPI.getHtmlFromJobPages([
       "https://growtherapy.com/careers/",
     ]);
     console.log(htmlArray);
