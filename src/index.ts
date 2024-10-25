@@ -42,28 +42,13 @@ app.use("/bot", botRouter);
 // make public folder accessible
 app.use(express.static("public"));
 
-// schedule cron jobs in development only
-if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-  cron.schedule("0 0 * * *", () => {
-    const date = new Date();
-    console.log(
-      `Getting jobs at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-    );
-    botAPI.getJobs();
-  });
-
-  // cron.schedule("0 * * * *", () => {
-  //   const date = new Date();
-  //   console.log(
-  //     `Checking batch response at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-  //   );
-  //   botAPI.checkBatchResponse();
-  // });
-}
-
-cron.schedule("*/2 * * * *", () => {
-  console.log("Running a scheduled job");
-});
+// schedule cron jobs
+// getJobs runs at 0:00
+cron.schedule("0 0 * * *", () => botAPI.getJobs());
+// check for batch responses every hour at *:00
+cron.schedule("0 * * * *", () => botAPI.checkBatchResponse());
+// check for job matches every hour at *:30
+cron.schedule("30 * * * *", () => botAPI.checkJobMatches());
 
 app.listen(port, () => {
   console.log(`[server]: Server is farting at http://localhost:${port}`);
