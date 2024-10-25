@@ -5,9 +5,11 @@ import {
   companyTable,
   current_jobs,
   jobTable,
+  keywords,
   match_records,
   user_companies,
   user_jobs,
+  user_keywords,
   users,
 } from "./schema";
 import type {
@@ -156,6 +158,30 @@ export async function getUserKeywords(user_id: string): Promise<Array<string>> {
     return result.map((user) => user.keywords.phrase);
   } catch (error) {
     throw new Error(getErrorMessage(error, "getUserCompanies"));
+  }
+}
+
+export async function createNewKeywords(keyword_array: string[]) {
+  try {
+    return await db
+      .insert(keywords)
+      .values(keyword_array.map((phrase) => ({ phrase })))
+      .returning();
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createNewKeywords"));
+  }
+}
+
+export async function createNewUserKeywords(
+  id_array: number[],
+  user_id: string
+) {
+  try {
+    await db
+      .insert(user_keywords)
+      .values(id_array.map((id) => ({ keyword_id: id, user_id })));
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createNewUserKeywords"));
   }
 }
 
