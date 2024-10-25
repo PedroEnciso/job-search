@@ -4,11 +4,24 @@ import {
   getOldestPendingBatchRequest,
   updateBatchRequestStatus,
   insertManyJobs,
+  updateBatchRequestTokens,
+  getYoungestCompletedBatchRequest,
+  getLatestMatchRecord,
+  getUsers,
+  getUserCompanies,
+  getUserKeywords,
+  getUserCurrentJobs,
+  getCompanyJobsFromToday,
+  createUserJob,
+  createMatchRecord,
+  deleteAllCurrentJobs,
+  bulkAddCurrentJobs,
 } from "../db/queries";
 import scraperAPI from "../lib/scraper";
 import fileWriterAPI from "../lib/fileWriter";
 import openaiAPI from "../lib/openai";
-import type { Company, BatchResponse } from "../types";
+import type { Company, BatchResponse, NewCurrentJob } from "../types";
+import { dateIsTodayPST } from "../lib/util";
 
 const botAPI = {
   async getJobs() {
@@ -66,10 +79,13 @@ const botAPI = {
           const response_array = await openaiAPI.getBatchResponseFileAsArray(
             batch_request.output_file_id
           );
+          // variable to keep track of total tokens in all responses
+          let total_tokens = 0;
           // loop through each response
           for (const response of response_array) {
             if (response === "") break;
             // get response as JSON
+            console.log("Parsing response");
             const json_response: BatchResponse = JSON.parse(response);
             // check if there is an error in the response
             if (json_response.error) {
@@ -80,32 +96,134 @@ const botAPI = {
               );
             } else {
               // no error, create jobs for each job title in response array
+              // format the string into an JS array
               const array_string =
                 json_response.response.body.choices[0].message.content;
-              // format the string into an JS array
-              const formatted_array_string = array_string.replace(/'/g, '"');
-              const job_title_array: string[] = JSON.parse(
-                formatted_array_string
-              );
-              // return;
+              // split by opening bracket
+              const string_partial = array_string.split("[");
+              // split by closing bracket
+              const string_partial_2 = string_partial[1].split("]");
+              // get the data in the middle
+              const string_data = string_partial_2[0];
+              const job_title_array: string[] = JSON.parse(`[${string_data}]`);
               // create an array of jobs from job titles
               const jobs = job_title_array.map((job) => ({
                 title: job,
                 found_at: db_batch_request.created_at,
                 company_id: parseInt(json_response.custom_id),
               }));
-              await insertManyJobs(jobs);
+              // ensure that there are jobs to add
+              if (jobs.length > 0) {
+                await insertManyJobs(jobs);
+              }
+              // add tokens from response to total_tokens
+              total_tokens =
+                total_tokens + json_response.response.body.usage.total_tokens;
             }
           }
+          // Finished looping through responses and creating jobs
           console.log("finished creating jobs");
+          // update batchResponse with total_tokens if they are greater than 0
+          if (total_tokens > 0) {
+            await updateBatchRequestTokens(db_batch_request.id, total_tokens);
+            console.log(`updated batch request tokens to ${total_tokens}`);
+          }
         } else {
           console.log("no batches are ready");
         }
-      } else {
-        console.log("no batches found");
       }
     } catch (error) {
       console.log("checkBatchResponse Error");
+      console.error(error);
+    }
+  },
+
+  async checkJobMatches() {
+    try {
+      // get the youngest completed batch request
+      const response_array = await getYoungestCompletedBatchRequest();
+      const youngest_completed_request = response_array[0];
+      // check if updated_at is today in PST
+      if (dateIsTodayPST(youngest_completed_request.created_at)) {
+        // get the latest match record
+        const match_response_array = await getLatestMatchRecord();
+        const latest_match_record = match_response_array[0];
+        // check if there is a match record from today. Proceed if it is not from today
+        if (!dateIsTodayPST(latest_match_record.created_at)) {
+          // array that holds all jobs to be add to current jobs
+          const jobs_for_current_jobs: NewCurrentJob[] = [];
+          // get users from database
+          const users = await getUsers();
+          // for each user, get their companies and keywords
+          for (const user of users) {
+            const user_companies = await getUserCompanies(user.id);
+            const user_keywords = await getUserKeywords(user.id);
+            // get users current jobs
+            const users_current_jobs = await getUserCurrentJobs(user.id);
+            for (const company of user_companies) {
+              // for each company, get their job titles
+              const company_jobs = await getCompanyJobsFromToday(company.id);
+              // check if the job title includes a key word
+              for (const job of company_jobs) {
+                // loop through each keyword phrase
+                for (const phrase of user_keywords) {
+                  if (job.title.toLowerCase().includes(phrase)) {
+                    // add that job title to user_jobs
+                    await createUserJob(user.id, job.id);
+                    console.log(
+                      `{user: ${user.name}, job: ${job.title}, keyword: ${phrase}}`
+                    );
+                    //check to see if an email should be sent
+                    // check if job exists in users_current_jobs
+                    const current_job = users_current_jobs.filter(
+                      (curr_job) => {
+                        if (
+                          curr_job.company_id === company.id &&
+                          curr_job.title === job.title
+                        ) {
+                          // job only exists in current job if job title and company id are the same
+                          return true;
+                        } else {
+                          return false;
+                        }
+                      }
+                    );
+                    if (current_job.length > 0) {
+                      // adding the job to Holder with current job's found_at value
+                      jobs_for_current_jobs.push({
+                        title: job.title,
+                        company_id: company.id,
+                        user_id: user.id,
+                        found_at: current_job[0].found_at,
+                      });
+                    } else {
+                      // job is new, send an email
+                      console.log("TODO: Send email to customer");
+                      // add the job to holder
+                      jobs_for_current_jobs.push({
+                        title: job.title,
+                        company_id: company.id,
+                        user_id: user.id,
+                        found_at: job.found_at,
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          }
+          // create a new match record
+          await createMatchRecord();
+          // erase all current_jobs
+          await deleteAllCurrentJobs();
+          // add all jobs in jobs_for_current_jobs
+          await bulkAddCurrentJobs(jobs_for_current_jobs);
+        } else {
+          console.log("Matches have been made today");
+        }
+      }
+    } catch (error) {
+      console.log("Error in get matches");
       console.error(error);
     }
   },
