@@ -37,7 +37,6 @@ app.set("view engine", "pug");
 
 // use routers
 app.use("/", view_router);
-app.use("/bot", botRouter);
 
 // make public folder accessible
 app.use(express.static("public"));
