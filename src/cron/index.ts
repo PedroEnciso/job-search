@@ -53,8 +53,6 @@ const botAPI = {
   },
 
   async checkBatchResponse() {
-    const now = new Date();
-    console.log(`Checking for batch responses at ${now.toLocaleTimeString()}`);
     try {
       // get the oldest batch request where status is not equal to failed, canceled, expired or completed
       const db_batch_request_array = await getOldestPendingBatchRequest();
@@ -89,7 +87,6 @@ const botAPI = {
           for (const response of response_array) {
             if (response === "") break;
             // get response as JSON
-            console.log("Parsing response");
             const json_response: BatchResponse = JSON.parse(response);
             // check if there is an error in the response
             if (json_response.error) {
@@ -132,8 +129,6 @@ const botAPI = {
             await updateBatchRequestTokens(db_batch_request.id, total_tokens);
             console.log(`updated batch request tokens to ${total_tokens}`);
           }
-        } else {
-          console.log("no batches are ready");
         }
       }
     } catch (error) {
@@ -143,8 +138,6 @@ const botAPI = {
   },
 
   async checkJobMatches() {
-    const now = new Date();
-    console.log(`Checking job matches at ${now.toLocaleTimeString()}`);
     try {
       // get the youngest completed batch request
       const response_array = await getYoungestCompletedBatchRequest();
@@ -228,11 +221,7 @@ const botAPI = {
           await deleteAllCurrentJobs();
           // add all jobs in jobs_for_current_jobs
           await bulkAddCurrentJobs(jobs_for_current_jobs);
-        } else {
-          console.log("Matches have been made today");
         }
-      } else {
-        console.log("No batch request from today");
       }
     } catch (error) {
       console.log("Error in get matches");
