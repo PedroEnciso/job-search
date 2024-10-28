@@ -161,6 +161,39 @@ export async function getUserCompanies(
   }
 }
 
+export async function getActiveUserCompanies(user_id: string) {
+  try {
+    const result = await db.query.user_companies.findMany({
+      where: (user_companies, { eq, and }) =>
+        and(
+          eq(user_companies.user_id, user_id),
+          eq(user_companies.is_active, true)
+        ),
+      with: {
+        company: true,
+      },
+    });
+    return result.map((user) => user.company);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getActiveUserCompanies"));
+  }
+}
+
+export async function getUserCompany(user_id: string, company_id: number) {
+  try {
+    const result = await db.query.user_companies.findFirst({
+      where: (user_companies, { eq, and }) =>
+        and(
+          eq(user_companies.user_id, user_id),
+          eq(user_companies.company_id, company_id)
+        ),
+    });
+    return result;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserCompany"));
+  }
+}
+
 export async function getUserKeywords(user_id: string): Promise<Array<string>> {
   try {
     const result = await db.query.user_keywords.findMany({
@@ -171,7 +204,7 @@ export async function getUserKeywords(user_id: string): Promise<Array<string>> {
     });
     return result.map((user) => user.keywords.phrase);
   } catch (error) {
-    throw new Error(getErrorMessage(error, "getUserCompanies"));
+    throw new Error(getErrorMessage(error, "getUserKeywords"));
   }
 }
 
@@ -336,7 +369,7 @@ export async function createNewUserCompany(
   is_active: boolean
 ) {
   try {
-    await db.insert(user_companies).values({ user_id, company_id });
+    await db.insert(user_companies).values({ user_id, company_id, is_active });
   } catch (error) {
     throw new Error(getErrorMessage(error, "createNewUserCompany"));
   }
