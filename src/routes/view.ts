@@ -22,6 +22,11 @@ view_router.get(
   checkForUser,
   companies_controller.get_new_company
 );
+view_router.patch(
+  "/companies/:id",
+  checkForUser,
+  companies_controller.patch_company
+);
 view_router.post(
   "/companies/new",
   checkForUser,
