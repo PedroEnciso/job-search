@@ -16,6 +16,7 @@ import {
   createMatchRecord,
   deleteAllCurrentJobs,
   bulkAddCurrentJobs,
+  getActiveUserCompanies,
 } from "../db/queries";
 import scraperAPI from "../lib/scraper";
 import fileWriterAPI from "../lib/fileWriter";
@@ -159,7 +160,7 @@ const botAPI = {
           const users = await getUsers();
           // for each user, get their companies and keywords
           for (const user of users) {
-            const user_companies = await getUserCompanies(user.id);
+            const user_companies = await getActiveUserCompanies(user.id);
             const user_keywords = await getUserKeywords(user.id);
             // get users current jobs
             const users_current_jobs = await getUserCurrentJobs(user.id);
