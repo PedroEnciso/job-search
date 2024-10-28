@@ -4,6 +4,7 @@ import {
   createNewCompany,
   createNewUserCompany,
   getUserCompanies,
+  getUserCompany,
 } from "../db/queries";
 import { check } from "express-validator";
 import { Supabase_User_Request } from "../middleware/checkForUser";
@@ -56,32 +57,31 @@ async function post_new_company(req: Request, res: Response) {
     const user_companies = await getUserCompanies(user_id);
     // THIS IS WHERE THE USER'S SUBSCRIPTION WILL BE CHECKED
     const ARBITRARY_COMPANY_COUNT = 5;
-    const is_active = user_companies.length >= ARBITRARY_COMPANY_COUNT;
-    if (user_companies.length >= ARBITRARY_COMPANY_COUNT) {
-      // user has too many companies
-      // idk if i will send this or just add a new company as inactive
-      error =
-        "Adding this company would exceed your subscription limit. This company will be added as inactive.";
-    }
-    // add the company to db if they have less than 5
+    // company_is_active false if user companies equals or exceeds the count
+    let company_is_active = user_companies.length < ARBITRARY_COMPANY_COUNT;
+    // add the company to db
     // check if this company exists in the db already
     let company_id: number;
     const company = await checkIfCompanyExists(company_name, company_url);
     if (!company) {
-      console.log("company has not been created yet");
       // company has not yet been added to db, add it
       const new_company = await createNewCompany(company_name, company_url);
       company_id = new_company[0].id;
-      console.log("new company", new_company);
     } else {
-      console.log("company has been created");
       // company does exist, get its id
       company_id = company.id;
+      // Check if this user has this company already
+      const user_already_created_company = await getUserCompany(
+        user_id,
+        company_id
+      );
+      if (user_already_created_company) {
+        // user has created this company before, throw error
+        throw new Error("You have already added this company");
+      }
     }
-    // TODO: Add a check to see if this user has this company already
-    //// i could add that into the else statement above
     // add a row to user_companies
-    await createNewUserCompany(user_id, company_id, is_active);
+    await createNewUserCompany(user_id, company_id, company_is_active);
     res.redirect("/companies");
   } catch (error) {
     // render error
