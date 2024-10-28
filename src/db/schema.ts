@@ -6,6 +6,7 @@ import {
   serial,
   text,
   timestamp,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const companyTable = pgTable("company", {
@@ -91,6 +92,7 @@ export const user_companies = pgTable("user_companies", {
   company_id: integer("company_id")
     .notNull()
     .references(() => companyTable.id),
+  is_active: boolean("is_active").notNull().default(false),
 });
 
 export const user_companies_relations = relations(
