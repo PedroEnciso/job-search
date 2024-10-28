@@ -1,0 +1,32 @@
+- const company_status = company.is_active ? "Active" : "Inactive"
+li.prose.w-full.max-w-full.flex.justify-between.items-center(id="company_"+company.id)
+  div
+    h3.my-0= company.name
+    a(
+      href=company.jobs_url
+      target="_blank"
+      rel="noopener"
+    ) View jobs page
+  div.flex.gap-8.items-center
+    if company.is_active
+      div.flex.items-center.gap-1
+        span.w-2.h-2.bg-secondary.rounded
+        p.m-0 Active
+    else
+      div.flex.items-center.gap-1
+        span.w-2.h-2.bg-error.rounded
+        p.m-0 Inactive
+    div.flex.gap-4 
+      if company.is_active
+        a(
+          hx-patch="/companies/"+company.id,
+          hx-vals='{"new_status": "inactive", "name": "'+company.name+'", "url": "'+company.jobs_url+'"}',
+          hx-target='#company_'+company.id
+        ).cursor-pointer Deactivate
+      else
+        a(
+          hx-patch="/companies/"+company.id,
+          hx-vals='{"new_status": "active", "name": "'+company.name+'", "url": "'+company.jobs_url+'"}',
+          hx-target='#company_'+company.id
+        ) Activate
+      a() Delete
