@@ -18,6 +18,7 @@ import type {
   BatchRequestStatus,
   User,
   NewCurrentJob,
+  CompanyWithIsActive,
 } from "../types";
 import { getErrorMessage, getStartAndEndHours } from "../lib/util";
 
@@ -147,7 +148,7 @@ export async function getUsers(): Promise<Array<User>> {
 
 export async function getUserCompanies(
   user_id: string
-): Promise<Array<Company>> {
+): Promise<Array<CompanyWithIsActive>> {
   try {
     const result = await db.query.user_companies.findMany({
       where: (user_companies, { eq }) => eq(user_companies.user_id, user_id),
@@ -155,7 +156,10 @@ export async function getUserCompanies(
         company: true,
       },
     });
-    return result.map((user) => user.company);
+    return result.map((user) => ({
+      ...user.company,
+      is_active: user.is_active,
+    }));
   } catch (error) {
     throw new Error(getErrorMessage(error, "getUserCompanies"));
   }
@@ -191,6 +195,27 @@ export async function getUserCompany(user_id: string, company_id: number) {
     return result;
   } catch (error) {
     throw new Error(getErrorMessage(error, "getUserCompany"));
+  }
+}
+
+export async function updateUserCompanyStatus(
+  user_id: string,
+  company_id: number,
+  new_status: boolean
+) {
+  try {
+    return await db
+      .update(user_companies)
+      .set({ is_active: new_status })
+      .where(
+        and(
+          eq(user_companies.user_id, user_id),
+          eq(user_companies.company_id, company_id)
+        )
+      )
+      .returning();
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "updateUserCompanyStatus"));
   }
 }
 
