@@ -1,4 +1,4 @@
-export type { Company } from "./company";
+export type { Company, CompanyWithIsActive } from "./company";
 export type {
   BatchRequest,
   BatchRequestStatus,
