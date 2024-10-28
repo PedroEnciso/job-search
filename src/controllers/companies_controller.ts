@@ -5,6 +5,7 @@ import {
   createNewUserCompany,
   getUserCompanies,
   getUserCompany,
+  updateUserCompanyStatus,
 } from "../db/queries";
 import { check } from "express-validator";
 import { Supabase_User_Request } from "../middleware/checkForUser";
@@ -15,18 +16,18 @@ async function get_companies(req: Request, res: Response) {
     if (!user_id) {
       res.redirect("/login");
     } else {
-      const user_companies = await getUserCompanies(user_id);
+      const user_companies_with_is_active = await getUserCompanies(user_id);
       if (req.headers["hx-target"]) {
         res.render("index", {
           page: "Companies",
           content: "companies",
-          companies: user_companies,
+          companies: user_companies_with_is_active,
         });
       } else {
         res.render("index", {
           page: "Companies",
           content: "companies",
-          companies: user_companies,
+          companies: user_companies_with_is_active,
         });
       }
     }
@@ -93,7 +94,38 @@ async function post_new_company(req: Request, res: Response) {
   }
 }
 
-export default { get_companies, get_new_company, post_new_company };
+async function patch_company(req: Request, res: Response) {
+  // get the user's id
+  const { user_id } = req.supabase_user as Supabase_User_Request;
+  // get the company id
+  const { id } = req.params;
+  const company_id = parseInt(id);
+  // get the new status as a boolean
+  const { new_status } = req.body;
+  const new_is_active = new_status === "active" ? true : false;
+  // update user_companies with new status
+  const updated_user_company = await updateUserCompanyStatus(
+    user_id,
+    company_id,
+    new_is_active
+  );
+  // return
+  res.render("companies/company", {
+    company: {
+      id: company_id,
+      name: req.body.name,
+      jobs_url: req.body.url,
+      is_active: new_is_active,
+    },
+  });
+}
+
+export default {
+  get_companies,
+  get_new_company,
+  post_new_company,
+  patch_company,
+};
 
 // validation functions
 async function validateNewCompanyRequest(req: Request) {
