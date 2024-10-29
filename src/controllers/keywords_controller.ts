@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createNewKeywords,
   createNewUserKeywords,
+  deleteUserKeyword,
   getUserKeywords,
 } from "../db/queries";
 import { Supabase_User_Request } from "../middleware/checkForUser";
@@ -10,7 +11,6 @@ import { check } from "express-validator";
 async function get_keywords(req: Request, res: Response) {
   try {
     const { user_id } = req.supabase_user as Supabase_User_Request;
-
     const user_keywords = await getUserKeywords(user_id);
     if (req.headers["hx-target"]) {
       res.render("index", {
@@ -74,10 +74,39 @@ async function post_new_keywords(req: Request, res: Response) {
   }
 }
 
+async function delete_keyword(req: Request, res: Response) {
+  try {
+    // get user id
+    const { user_id } = req.supabase_user as Supabase_User_Request;
+    // get the keyword id
+    const { id } = req.params;
+    // get the id as a number
+    const keyword_id = parseInt(id);
+    // check that the id is a number
+    if (!isNaN(keyword_id)) {
+      // id is a number, delete
+      await deleteUserKeyword(user_id, keyword_id);
+    }
+    // get user's keywords
+    const user_keywords = await getUserKeywords(user_id);
+    // render
+    res.render("keywords/keywords", {
+      keywords: user_keywords,
+    });
+  } catch (error) {
+    console.log(error);
+    res.render("error", {
+      message:
+        "There was an issue deleting a keyword. Please refresh the page.",
+    });
+  }
+}
+
 export default {
   get_keywords,
   get_new_keywords,
   post_new_keywords,
+  delete_keyword,
 };
 
 async function validateNewKeywords(req: Request) {

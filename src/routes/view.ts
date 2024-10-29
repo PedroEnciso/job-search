@@ -49,6 +49,11 @@ view_router.post(
   checkForUser,
   keywords_controller.post_new_keywords
 );
+view_router.delete(
+  "/keywords/:id",
+  checkForUser,
+  keywords_controller.delete_keyword
+);
 //// AUTH ROUTES
 // login
 view_router.get("/login", checkForUser, auth_controller.get_login);
