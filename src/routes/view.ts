@@ -27,6 +27,11 @@ view_router.patch(
   checkForUser,
   companies_controller.patch_company
 );
+view_router.delete(
+  "/companies/:id",
+  checkForUser,
+  companies_controller.delete_company
+);
 view_router.post(
   "/companies/new",
   checkForUser,

@@ -3,6 +3,7 @@ import {
   checkIfCompanyExists,
   createNewCompany,
   createNewUserCompany,
+  deleteUserCompany,
   getUserCompanies,
   getUserCompany,
   updateUserCompanyStatus,
@@ -11,25 +12,21 @@ import { check } from "express-validator";
 import { Supabase_User_Request } from "../middleware/checkForUser";
 
 async function get_companies(req: Request, res: Response) {
+  const { user_id } = req.supabase_user as Supabase_User_Request;
   try {
-    const user_id = req.supabase_user?.user_id;
-    if (!user_id) {
-      res.redirect("/login");
+    const user_companies_with_is_active = await getUserCompanies(user_id);
+    if (req.headers["hx-target"]) {
+      res.render("index", {
+        page: "Companies",
+        content: "companies",
+        companies: user_companies_with_is_active,
+      });
     } else {
-      const user_companies_with_is_active = await getUserCompanies(user_id);
-      if (req.headers["hx-target"]) {
-        res.render("index", {
-          page: "Companies",
-          content: "companies",
-          companies: user_companies_with_is_active,
-        });
-      } else {
-        res.render("index", {
-          page: "Companies",
-          content: "companies",
-          companies: user_companies_with_is_active,
-        });
-      }
+      res.render("index", {
+        page: "Companies",
+        content: "companies",
+        companies: user_companies_with_is_active,
+      });
     }
   } catch (error) {
     console.log("error getting companies");
@@ -104,11 +101,7 @@ async function patch_company(req: Request, res: Response) {
   const { new_status } = req.body;
   const new_is_active = new_status === "active" ? true : false;
   // update user_companies with new status
-  const updated_user_company = await updateUserCompanyStatus(
-    user_id,
-    company_id,
-    new_is_active
-  );
+  await updateUserCompanyStatus(user_id, company_id, new_is_active);
   // return
   res.render("companies/company", {
     company: {
@@ -120,11 +113,32 @@ async function patch_company(req: Request, res: Response) {
   });
 }
 
+async function delete_company(req: Request, res: Response) {
+  // get the user's id
+  const { user_id } = req.supabase_user as Supabase_User_Request;
+  // get the company id
+  const { id } = req.params;
+  // get company id as a number
+  const company_id = parseInt(id);
+  // ensure company_id is a number
+  if (!isNaN(company_id)) {
+    // company_id is a number, proceed with deleting
+    await deleteUserCompany(user_id, company_id);
+  }
+  // get user's current companie
+  const user_companies_with_is_active = await getUserCompanies(user_id);
+  // render
+  res.render("companies/companies", {
+    companies: user_companies_with_is_active,
+  });
+}
+
 export default {
   get_companies,
   get_new_company,
   post_new_company,
   patch_company,
+  delete_company,
 };
 
 // validation functions
