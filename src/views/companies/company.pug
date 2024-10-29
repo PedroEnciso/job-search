@@ -29,4 +29,7 @@ li.prose.w-full.max-w-full.flex.justify-between.items-center(id="company_"+compa
           hx-vals='{"new_status": "active", "name": "'+company.name+'", "url": "'+company.jobs_url+'"}',
           hx-target='#company_'+company.id
         ) Activate
-      a() Delete
+      a(
+        hx-delete="/companies/"+company.id,
+        hx-target="#content"
+      ).cursor-pointer Delete
