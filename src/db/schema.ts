@@ -180,3 +180,10 @@ export const current_jobs_relations = relations(current_jobs, ({ one }) => ({
     references: [companyTable.id],
   }),
 }));
+
+export const paginated_companies = pgTable("paginated_companies", {
+  id: serial("id").primaryKey(),
+  company_name: text("company_name").notNull(),
+  url: text("url").notNull(),
+  user_id: text("user_id").notNull(),
+});
