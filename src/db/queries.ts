@@ -19,6 +19,7 @@ import type {
   User,
   NewCurrentJob,
   CompanyWithIsActive,
+  Keyword,
 } from "../types";
 import { getErrorMessage, getStartAndEndHours } from "../lib/util";
 
@@ -234,7 +235,9 @@ export async function deleteUserCompany(user_id: string, company_id: number) {
   }
 }
 
-export async function getUserKeywords(user_id: string): Promise<Array<string>> {
+export async function getUserKeywords(
+  user_id: string
+): Promise<Array<Keyword>> {
   try {
     const result = await db.query.user_keywords.findMany({
       where: (user_keywords, { eq }) => eq(user_keywords.user_id, user_id),
@@ -242,7 +245,7 @@ export async function getUserKeywords(user_id: string): Promise<Array<string>> {
         keywords: true,
       },
     });
-    return result.map((user) => user.keywords.phrase);
+    return result.map((user) => user.keywords);
   } catch (error) {
     throw new Error(getErrorMessage(error, "getUserKeywords"));
   }
@@ -269,6 +272,21 @@ export async function createNewUserKeywords(
       .values(id_array.map((id) => ({ keyword_id: id, user_id })));
   } catch (error) {
     throw new Error(getErrorMessage(error, "createNewUserKeywords"));
+  }
+}
+
+export async function deleteUserKeyword(user_id: string, keyword_id: number) {
+  try {
+    await db
+      .delete(user_keywords)
+      .where(
+        and(
+          eq(user_keywords.user_id, user_id),
+          eq(user_keywords.keyword_id, keyword_id)
+        )
+      );
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "deleteUserKeyword"));
   }
 }
 
