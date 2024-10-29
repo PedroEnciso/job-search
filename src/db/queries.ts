@@ -219,6 +219,21 @@ export async function updateUserCompanyStatus(
   }
 }
 
+export async function deleteUserCompany(user_id: string, company_id: number) {
+  await db
+    .delete(user_companies)
+    .where(
+      and(
+        eq(user_companies.user_id, user_id),
+        eq(user_companies.company_id, company_id)
+      )
+    );
+  try {
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "deleteUserCompany"));
+  }
+}
+
 export async function getUserKeywords(user_id: string): Promise<Array<string>> {
   try {
     const result = await db.query.user_keywords.findMany({
