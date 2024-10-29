@@ -8,7 +8,10 @@ div.relative
 ul.flex.gap-8.bg-accent.rounded-xl.py-10.px-8
   each keyword in keywords
     li.prose 
-      h3.prose-xl.mb-0= keyword
-      button remove
+      h3.prose-xl.mb-0= keyword.phrase
+      a(
+        hx-delete="/keywords/"+keyword.id,
+        hx-target="#content"
+      ).cursor-pointer remove
 
 
