@@ -1,4 +1,5 @@
 import fs from "fs";
+import fsPromises from "fs/promises";
 import openaiAPI from "./openai";
 import path from "path";
 import { dirname } from "..";
@@ -29,10 +30,12 @@ const fileWriterAPI = {
         );
         if (fs.existsSync(json_file_path)) {
           // file has been created, add to json_data_string
-          json_data_string = fs.readFileSync(json_file_path, "utf8");
+          // json_data_string = fs.readFileSync(json_file_path, "utf8");
+          json_data_string = await fsPromises.readFile(json_file_path, "utf8");
         }
         const all_data = json_data_string.concat(json_string);
-        fs.writeFileSync(json_file_path, all_data);
+        // fs.writeFileSync();
+        await fsPromises.writeFile(json_file_path, all_data);
 
         // const json_data = file.fs.readFile(
         //   "results.json",
