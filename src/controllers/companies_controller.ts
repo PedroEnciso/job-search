@@ -15,7 +15,9 @@ import { Supabase_User_Request } from "../middleware/checkForUser";
 async function get_companies(req: Request, res: Response) {
   const { user_id } = req.supabase_user as Supabase_User_Request;
   try {
+    // get user_companies
     const user_companies_with_is_active = await getUserCompanies(user_id);
+    // get all paginated_companies
     if (req.headers["hx-target"]) {
       res.render("index", {
         page: "Companies",
@@ -56,7 +58,7 @@ async function post_new_company(req: Request, res: Response) {
     // check to make sure the user does not have more than 5 companies listed
     const user_companies = await getUserCompanies(user_id);
     // THIS IS WHERE THE USER'S SUBSCRIPTION WILL BE CHECKED
-    const ARBITRARY_COMPANY_COUNT = 5;
+    const ARBITRARY_COMPANY_COUNT = 3;
     // company_is_active false if user companies equals or exceeds the count
     let company_is_active = user_companies.length < ARBITRARY_COMPANY_COUNT;
     // add the company to db
