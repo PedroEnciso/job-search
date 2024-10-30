@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { dirname } from "..";
 import { getErrorMessage } from "./util";
+import { logger } from "../logger";
 const openai = new OpenAI();
 const openai_model = "gpt-4o-mini";
 
@@ -39,6 +40,16 @@ const openaiAPI = {
 
   async uploadJsonlFile() {
     try {
+      const json_file_path = path.join(
+        dirname,
+        "src",
+        "requests",
+        "requests.jsonl"
+      );
+      if (fs.existsSync(json_file_path)) {
+        logger.info("The json file path does not exist");
+        throw new Error("The json file path does not exist");
+      }
       return await openai.files.create({
         file: fs.createReadStream(
           path.join(dirname, "src", "requests", "requests.jsonl")

@@ -39,9 +39,9 @@ app.set("view engine", "pug");
 // use routers
 app.use("/", view_router);
 // add bot router in development for testing
-if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-  app.use("/bot", botRouter);
-}
+//if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+app.use("/bot", botRouter);
+//}
 // route to display logs
 app.use("/logs", express.static(dirname + "/combined.log"));
 // make public folder accessible
@@ -49,7 +49,7 @@ app.use(express.static("public"));
 
 // schedule cron jobs
 // getJobs runs at 0:00
-cron.schedule("5 19 * * *", () => botAPI.getJobs());
+cron.schedule("0 0 * * *", () => botAPI.getJobs());
 // check for batch responses every hour at *:00
 cron.schedule("0 * * * *", () => botAPI.checkBatchResponse());
 // check for job matches every hour at *:30
