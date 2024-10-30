@@ -49,7 +49,7 @@ app.use(express.static("public"));
 
 // schedule cron jobs
 // getJobs runs at 0:00
-cron.schedule("0 0 * * *", () => botAPI.getJobs());
+cron.schedule("25 18 * * *", () => botAPI.getJobs());
 // check for batch responses every hour at *:00
 cron.schedule("0 * * * *", () => botAPI.checkBatchResponse());
 // check for job matches every hour at *:30
