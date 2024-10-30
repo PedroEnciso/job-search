@@ -18,7 +18,6 @@ declare global {
 }
 
 export const dirname = path.resolve();
-console.log(dirname);
 dotenv.config();
 
 const app: Express = express();
@@ -40,9 +39,9 @@ app.set("view engine", "pug");
 // use routers
 app.use("/", view_router);
 // add bot router in development for testing
-//if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-app.use("/bot", botRouter);
-//}
+if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+  app.use("/bot", botRouter);
+}
 // route to display logs
 app.use("/logs", express.static(path.join(dirname, "combined.log")));
 // test route to display json file
