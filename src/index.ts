@@ -44,8 +44,6 @@ if (process.env.ENVIRONMENT === "DEVELOPMENT") {
 }
 // route to display logs
 app.use("/logs", express.static(path.join(dirname, "combined.log")));
-// test route to display json file
-app.use("/json", express.static(path.join(dirname, "requests.jsonl")));
 
 // make public folder accessible
 app.use(express.static("public"));
