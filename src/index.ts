@@ -5,6 +5,7 @@ import cookie_parser from "cookie-parser";
 import body_parser from "body-parser";
 import cron from "node-cron";
 import botAPI from "./cron";
+import { logger } from "./logger";
 import { Supabase_User_Request } from "./middleware/checkForUser";
 import { botRouter, view_router } from "./routes";
 
@@ -57,5 +58,6 @@ cron.schedule("30 * * * *", () => botAPI.checkJobMatches());
 cron.schedule("*/5 * * * *", () => botAPI.test());
 
 app.listen(port, () => {
+  logger.info("App is running");
   console.log(`[server]: Server is farting at http://localhost:${port}`);
 });
