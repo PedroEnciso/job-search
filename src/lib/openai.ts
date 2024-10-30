@@ -46,14 +46,12 @@ const openaiAPI = {
         "requests",
         "requests.jsonl"
       );
-      if (fs.existsSync(json_file_path)) {
+      if (!fs.existsSync(json_file_path)) {
         logger.info("The json file path does not exist");
         throw new Error("The json file path does not exist");
       }
       return await openai.files.create({
-        file: fs.createReadStream(
-          path.join(dirname, "src", "requests", "requests.jsonl")
-        ),
+        file: fs.createReadStream(json_file_path),
         purpose: "batch",
       });
     } catch (error) {
