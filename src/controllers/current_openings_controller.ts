@@ -2,8 +2,10 @@ import { Response, Request } from "express";
 import { Supabase_User_Request } from "../middleware/checkForUser";
 import { getUserCurrentJobs } from "../db/queries";
 import { getUniqueCompanies } from "../lib/util";
+import { logger } from "../logger";
 
 async function get_current_openings(req: Request, res: Response) {
+  logger.info("get_current_jobs");
   let company_filter = (req.query.company as string) || "";
   try {
     // get the user's id from req.supabase_user
