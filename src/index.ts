@@ -41,7 +41,8 @@ app.use("/", view_router);
 if (process.env.ENVIRONMENT === "DEVELOPMENT") {
   app.use("/bot", botRouter);
 }
-
+// route to display logs
+app.use("/logs", express.static(dirname + "/combined.log"));
 // make public folder accessible
 app.use(express.static("public"));
 
