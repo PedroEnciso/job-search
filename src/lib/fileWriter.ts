@@ -1,9 +1,10 @@
-import fs_promise from "node:fs/promises";
 import fs from "fs";
 import openaiAPI from "./openai";
+import path from "path";
+import { dirname } from "..";
 import type { Company } from "../types";
 
-const path = "./src/requests/requests.jsonl";
+// const path = "./src/requests/requests.jsonl";
 
 const fileWriterAPI = {
   async writeOpenaiRequestsToJsonlFIle(
@@ -20,12 +21,18 @@ const fileWriterAPI = {
 
         // check if the file has been created
         let json_data_string = "";
-        if (fs.existsSync(path)) {
+        const json_file_path = path.join(
+          dirname,
+          "src",
+          "requests",
+          "requests.jsonl"
+        );
+        if (fs.existsSync(json_file_path)) {
           // file has been created, add to json_data_string
-          json_data_string = fs.readFileSync(path, "utf8");
+          json_data_string = fs.readFileSync(json_file_path, "utf8");
         }
         const all_data = json_data_string.concat(json_string);
-        fs.writeFileSync(path, all_data);
+        fs.writeFileSync(json_file_path, all_data);
 
         // const json_data = file.fs.readFile(
         //   "results.json",

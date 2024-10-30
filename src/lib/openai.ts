@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import fs from "fs";
+import path from "path";
+import { dirname } from "..";
 import { getErrorMessage } from "./util";
 const openai = new OpenAI();
 const openai_model = "gpt-4o-mini";
@@ -38,7 +40,9 @@ const openaiAPI = {
   async uploadJsonlFile() {
     try {
       return await openai.files.create({
-        file: fs.createReadStream("./src/requests/requests.jsonl"),
+        file: fs.createReadStream(
+          path.join(dirname, "src", "requests", "requests.jsonl")
+        ),
         purpose: "batch",
       });
     } catch (error) {
