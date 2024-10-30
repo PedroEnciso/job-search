@@ -22,12 +22,7 @@ const fileWriterAPI = {
 
         // check if the file has been created
         let json_data_string = "";
-        const json_file_path = path.join(
-          dirname,
-          "src",
-          "requests",
-          "requests.jsonl"
-        );
+        const json_file_path = path.join(dirname, "dist", "requests.jsonl");
         if (fs.existsSync(json_file_path)) {
           // file has been created, add to json_data_string
           // json_data_string = fs.readFileSync(json_file_path, "utf8");

@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-export const dirname = path.resolve();
+export const dirname = __dirname;
 dotenv.config();
 
 const app: Express = express();
@@ -45,10 +45,7 @@ app.use("/bot", botRouter);
 // route to display logs
 app.use("/logs", express.static(path.join(dirname, "combined.log")));
 // test route to display json file
-app.use(
-  "/json",
-  express.static(path.join(dirname, "src", "requests", "requests.jsonl"))
-);
+app.use("/json", express.static(path.join(dirname, "requests.jsonl")));
 
 // make public folder accessible
 app.use(express.static("public"));
@@ -60,8 +57,6 @@ cron.schedule("0 0 * * *", () => botAPI.getJobs());
 cron.schedule("0 * * * *", () => botAPI.checkBatchResponse());
 // check for job matches every hour at *:30
 cron.schedule("30 * * * *", () => botAPI.checkJobMatches());
-// test scheduler
-cron.schedule("*/5 * * * *", () => botAPI.test());
 
 app.listen(port, () => {
   logger.info("App is running");

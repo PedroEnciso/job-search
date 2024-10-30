@@ -40,12 +40,7 @@ const openaiAPI = {
 
   async uploadJsonlFile() {
     try {
-      const json_file_path = path.join(
-        dirname,
-        "src",
-        "requests",
-        "requests.jsonl"
-      );
+      const json_file_path = path.join(dirname, "dist", "requests.jsonl");
       if (!fs.existsSync(json_file_path)) {
         logger.info("The json file path does not exist");
         throw new Error("The json file path does not exist");
