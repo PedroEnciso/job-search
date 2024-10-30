@@ -26,6 +26,10 @@ import { dateIsTodayPST } from "../lib/util";
 import { logger } from "../logger";
 
 const botAPI = {
+  test() {
+    logger.info("Running test");
+  },
+
   async getJobs() {
     logger.info("Running getJobs");
     try {

@@ -53,6 +53,8 @@ cron.schedule("0 0 * * *", () => botAPI.getJobs());
 cron.schedule("0 * * * *", () => botAPI.checkBatchResponse());
 // check for job matches every hour at *:30
 cron.schedule("30 * * * *", () => botAPI.checkJobMatches());
+// test scheduler
+cron.schedule("*/5 * * * *", () => botAPI.test());
 
 app.listen(port, () => {
   console.log(`[server]: Server is farting at http://localhost:${port}`);
