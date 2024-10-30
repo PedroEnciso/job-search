@@ -22,6 +22,24 @@ div.bg-primary.rounded-xl.py-10.px-8
       div.label.pt-0.pb-2
         span.label-text.font-medium.prose.prose-md.m-0.text-base-content Career page URL
       input.input.input-bordered.w-full.rounded#company_url(type="text", placeholder="https://company.com/careers", required, name="company_url", hx-preserve)
+    fieldset.form-control.w-full
+      legend.label-text.font-medium.prose.prose-md.m-0.text-base-content Are the jobs paginated?
+        label.flex.gap-2.pt-0.pb-1
+          input(type="radio" name="paginated" value="true" required)
+          span.label-text.font-medium.prose.prose-md.m-0.text-base-content Yes
+        label.flex.gap-2.pt-0.pb-2
+          input(type="radio" name="paginated" value="false" required)
+          span.label-text.font-medium.prose.prose-md.m-0.text-base-content No
+      div.collapse.collapse-arrow
+        input(type="checkbox" name="my-accordion")
+        div.collapse-title.text-lg What does "paginated" mean?
+        div.collapse-content
+          p.prose.prose-sm Explanation
+      div.collapse.collapse-arrow
+        input(type="checkbox" name="my-accordion")
+        div.collapse-title.text-lg Why are you asking?
+        div.collapse-content
+          p.prose.prose-sm Explanation
     button#submit.relative.btn.btn-secondary.rounded Submit company
       div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
         span.loading.loading-spinner.loading-sm 

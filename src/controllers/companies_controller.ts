@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   checkIfCompanyExists,
   createNewCompany,
+  createNewPaginatedCompany,
   createNewUserCompany,
   deleteUserCompany,
   getUserCompanies,
@@ -50,7 +51,8 @@ async function post_new_company(req: Request, res: Response) {
     const { user_id } = req.supabase_user as Supabase_User_Request;
     let error: string | null = null;
     // get the name and title of the new company from the request
-    const { company_name, company_url } = await validateNewCompanyRequest(req);
+    const { company_name, company_url, paginated } =
+      await validateNewCompanyRequest(req);
     // check to make sure the user does not have more than 5 companies listed
     const user_companies = await getUserCompanies(user_id);
     // THIS IS WHERE THE USER'S SUBSCRIPTION WILL BE CHECKED
@@ -62,9 +64,19 @@ async function post_new_company(req: Request, res: Response) {
     let company_id: number;
     const company = await checkIfCompanyExists(company_name, company_url);
     if (!company) {
-      // company has not yet been added to db, add it
-      const new_company = await createNewCompany(company_name, company_url);
-      company_id = new_company[0].id;
+      // create new row in db for company
+      if (paginated) {
+        // create a row in paginated_companies
+        await createNewPaginatedCompany(user_id, company_name, company_url);
+        // set arbitrary company_id value
+        company_id = 0;
+        // send email to admin that a new paginated company was created
+        console.log("TODO: SEND EMAIL UPDATE");
+      } else {
+        // company has not yet been added to db, add it
+        const new_company = await createNewCompany(company_name, company_url);
+        company_id = new_company[0].id;
+      }
     } else {
       // company does exist, get its id
       company_id = company.id;
@@ -78,8 +90,10 @@ async function post_new_company(req: Request, res: Response) {
         throw new Error("You have already added this company");
       }
     }
-    // add a row to user_companies
-    await createNewUserCompany(user_id, company_id, company_is_active);
+    if (!paginated) {
+      // only add new user company row if not paginated
+      await createNewUserCompany(user_id, company_id, company_is_active);
+    }
     res.redirect("/companies");
   } catch (error) {
     // render error
@@ -166,8 +180,23 @@ async function validateNewCompanyRequest(req: Request) {
     console.log(url_result);
     throw new Error(url_result.context.errors[0].msg);
   }
+  // validate and sanitize paginated
+  const paginated_result = await check("paginated")
+    .notEmpty()
+    .escape()
+    .withMessage("Paginated field is invalid.")
+    .run(req);
+  // check for errors
+  if (!paginated_result.isEmpty()) {
+    console.log(paginated_result);
+    throw new Error(paginated_result.context.errors[0].msg);
+  }
+
   // body is validated, get values as string and return
   const company_name = req.body.company_name as string;
   const company_url = req.body.company_url as string;
-  return { company_name, company_url };
+  const paginated_response = req.body.paginated as string;
+  let paginated = false;
+  if (paginated_response === "true") paginated = true;
+  return { company_name, company_url, paginated };
 }
