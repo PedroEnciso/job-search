@@ -181,9 +181,16 @@ export const current_jobs_relations = relations(current_jobs, ({ one }) => ({
   }),
 }));
 
+export const paginated_companies_status_enum = pgEnum("status", [
+  "pending",
+  "under review",
+  "completed",
+]);
+
 export const paginated_companies = pgTable("paginated_companies", {
   id: serial("id").primaryKey(),
   company_name: text("company_name").notNull(),
   url: text("url").notNull(),
   user_id: text("user_id").notNull(),
+  status: paginated_companies_status_enum("status").notNull(),
 });
