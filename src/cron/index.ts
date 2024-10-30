@@ -171,7 +171,7 @@ const botAPI = {
               for (const job of company_jobs) {
                 // loop through each keyword phrase
                 for (const phrase of user_keywords) {
-                  if (job.title.toLowerCase().includes(phrase)) {
+                  if (job.title.toLowerCase().includes(phrase.phrase)) {
                     // add that job title to user_jobs
                     await createUserJob(user.id, job.id);
                     console.log(
