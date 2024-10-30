@@ -23,11 +23,11 @@ import fileWriterAPI from "../lib/fileWriter";
 import openaiAPI from "../lib/openai";
 import type { Company, BatchResponse, NewCurrentJob } from "../types";
 import { dateIsTodayPST } from "../lib/util";
+import { logger } from "../logger";
 
 const botAPI = {
   async getJobs() {
-    const now = new Date();
-    console.log(`Getting jobs at ${now.toLocaleTimeString()}`);
+    logger.info("Running getJobs");
     try {
       // get all companys
       const companies: Company[] = await getAllCompanies();
@@ -46,10 +46,9 @@ const botAPI = {
       const batch_request = await openaiAPI.createBatchRequest(file.id);
       // save batch id to db
       await createBatchRequest(batch_request.id, file.id);
-      console.log("Finished getting jobs");
+      logger.info("Finished running getJobs");
     } catch (error) {
-      console.log("getJobs Error");
-      console.error(error);
+      logger.error(`Error getting jobs: ${error}`);
     }
   },
 
@@ -71,13 +70,13 @@ const botAPI = {
             batch_request.id,
             batch_request.status
           );
-          console.log(`updated status of batch ${batch_request.id}`);
         }
         // check if the status is completed and if output file is available
         if (
           batch_request.status === "completed" &&
           batch_request.output_file_id
         ) {
+          logger.info("Found a completed batch response");
           // fetch the file response from openai as an array of responses
           const response_array = await openaiAPI.getBatchResponseFileAsArray(
             batch_request.output_file_id
@@ -92,9 +91,8 @@ const botAPI = {
             // check if there is an error in the response
             if (json_response.error) {
               // log the error, I'm unsure of its structure
-              console.log(
-                `There was an error with the response for job #${json_response.custom_id}:`,
-                json_response.error
+              logger.error(
+                `There was an error with the response for job #${json_response.custom_id}: ${json_response.error}`
               );
             } else {
               // no error, create jobs for each job title in response array
@@ -124,17 +122,18 @@ const botAPI = {
             }
           }
           // Finished looping through responses and creating jobs
-          console.log("finished creating jobs");
+          logger.info("finished creating jobs");
           // update batchResponse with total_tokens if they are greater than 0
           if (total_tokens > 0) {
             await updateBatchRequestTokens(db_batch_request.id, total_tokens);
-            console.log(`updated batch request tokens to ${total_tokens}`);
+            logger.info(`Request used ${total_tokens} tokens`);
           }
         }
       }
     } catch (error) {
-      console.log("checkBatchResponse Error");
-      console.error(error);
+      logger.error(
+        `There was an error while checking for a batch response: ${error}`
+      );
     }
   },
 
@@ -150,10 +149,7 @@ const botAPI = {
         const latest_match_record = match_response_array[0];
         // check if there is a match record from today. Proceed if it is not from today
         if (!dateIsTodayPST(latest_match_record.created_at)) {
-          console.log(
-            "is date today?",
-            dateIsTodayPST(latest_match_record.created_at)
-          );
+          logger.info("Checking for job matches");
           // array that holds all jobs to be add to current jobs
           const jobs_for_current_jobs: NewCurrentJob[] = [];
           // get users from database
@@ -174,9 +170,6 @@ const botAPI = {
                   if (job.title.toLowerCase().includes(phrase.phrase)) {
                     // add that job title to user_jobs
                     await createUserJob(user.id, job.id);
-                    console.log(
-                      `{user: ${user.name}, job: ${job.title}, keyword: ${phrase}}`
-                    );
                     //check to see if an email should be sent
                     // check if job exists in users_current_jobs
                     const current_job = users_current_jobs.filter(
@@ -202,7 +195,7 @@ const botAPI = {
                       });
                     } else {
                       // job is new, send an email
-                      console.log("TODO: Send email to customer");
+                      logger.info("TODO: Send the customer an email");
                       // add the job to holder
                       jobs_for_current_jobs.push({
                         title: job.title,
@@ -225,8 +218,7 @@ const botAPI = {
         }
       }
     } catch (error) {
-      console.log("Error in get matches");
-      console.error(error);
+      logger.error(`There was an error while checking for matches: ${error}`);
     }
   },
 };
