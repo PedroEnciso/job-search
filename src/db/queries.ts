@@ -7,6 +7,7 @@ import {
   jobTable,
   keywords,
   match_records,
+  paginated_companies,
   user_companies,
   user_jobs,
   user_keywords,
@@ -430,5 +431,19 @@ export async function createNewUserCompany(
     await db.insert(user_companies).values({ user_id, company_id, is_active });
   } catch (error) {
     throw new Error(getErrorMessage(error, "createNewUserCompany"));
+  }
+}
+
+export async function createNewPaginatedCompany(
+  user_id: string,
+  company_name: string,
+  company_url: string
+) {
+  try {
+    await db
+      .insert(paginated_companies)
+      .values({ user_id, url: company_url, company_name, status: "pending" });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "createNewPaginatedCompany"));
   }
 }
