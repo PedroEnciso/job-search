@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-const dirname = path.resolve();
+export const dirname = path.resolve();
 dotenv.config();
 
 const app: Express = express();
