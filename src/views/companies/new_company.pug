@@ -23,26 +23,26 @@ div.bg-primary.rounded-xl.py-10.px-8
         span.label-text.font-medium.prose.prose-md.m-0.text-base-content Career page URL
       input.input.input-bordered.w-full.rounded#company_url(type="text", placeholder="https://company.com/careers", required, name="company_url", hx-preserve)
     fieldset.form-control.w-full
-      legend.label-text.font-medium.prose.prose-md.m-0.text-base-content Are the jobs paginated?
+      legend.label-text.font-medium.prose.prose-md.m-0.text-base-content Is this webpage paginated?
         label.flex.gap-2.pt-0.pb-1
           input(type="radio" name="paginated" value="true" required)
           span.label-text.font-medium.prose.prose-md.m-0.text-base-content Yes
         label.flex.gap-2.pt-0.pb-2
           input(type="radio" name="paginated" value="false" required)
           span.label-text.font-medium.prose.prose-md.m-0.text-base-content No
-      div.collapse.collapse-arrow
-        input(type="checkbox" name="my-accordion")
-        div.collapse-title.text-lg What does "paginated" mean?
-        div.collapse-content
-          p.prose.prose-sm Explanation
-      div.collapse.collapse-arrow
-        input(type="checkbox" name="my-accordion")
-        div.collapse-title.text-lg Why are you asking?
-        div.collapse-content
-          p.prose.prose-sm Explanation
     button#submit.relative.btn.btn-secondary.rounded Submit company
-      div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center
-        span.loading.loading-spinner.loading-sm 
-        p Creating company
     if error
       p.text-error= error
+    div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center.items-center
+      span.loading.loading-spinner.loading-sm 
+      p Creating company
+    div.collapse.collapse-arrow
+      input(type="checkbox" name="my-accordion").min-h-0
+      div.collapse-title.text-lg.py-0.px-0.min-h-0 What does "paginated" mean?
+      div.collapse-content
+        p.prose.prose-sm.w-full.min-w-full A paginated webpage splits its content into different pages, like showing job listings a few at a time with "Next" or page numbers (1, 2, 3, etc.) at the bottom to move between them. Some websites also use "load on scroll," where more job listings automatically appear as you scroll down, without needing to click anything.
+    div.collapse.collapse-arrow
+      input(type="checkbox" name="my-accordion").min-h-0
+      div.collapse-title.text-lg.py-0.px-0.min-h-0 Why are you asking?
+      div.collapse-content
+        p.prose.prose-sm.w-full.min-w-full Our web scraper works differently with pages that have pagination, so marking a page as “paginated” is essential for it to function properly. If a page with pagination isn’t marked, the scraper may not run correctly and could miss jobs that are hidden on other pages.
