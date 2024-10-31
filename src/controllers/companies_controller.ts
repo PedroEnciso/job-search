@@ -7,6 +7,7 @@ import {
   deleteUserCompany,
   getUserCompanies,
   getUserCompany,
+  getUserPaginatedCompanies,
   updateUserCompanyStatus,
 } from "../db/queries";
 import { check } from "express-validator";
@@ -18,17 +19,20 @@ async function get_companies(req: Request, res: Response) {
     // get user_companies
     const user_companies_with_is_active = await getUserCompanies(user_id);
     // get all paginated_companies
+    const paginated_companies = await getUserPaginatedCompanies(user_id);
     if (req.headers["hx-target"]) {
       res.render("index", {
         page: "Companies",
         content: "companies",
         companies: user_companies_with_is_active,
+        paginated_companies,
       });
     } else {
       res.render("index", {
         page: "Companies",
         content: "companies",
         companies: user_companies_with_is_active,
+        paginated_companies,
       });
     }
   } catch (error) {

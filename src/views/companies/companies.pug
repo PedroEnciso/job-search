@@ -9,4 +9,7 @@ div.relative
 ul.flex.flex-col.gap-8.bg-primary.rounded-xl.py-10.px-8
   each company in companies
     include company.pug
+  each company in paginated_companies
+    include paginated_company.pug
+
 
