@@ -447,3 +447,13 @@ export async function createNewPaginatedCompany(
     throw new Error(getErrorMessage(error, "createNewPaginatedCompany"));
   }
 }
+
+export async function getUserPaginatedCompanies(user_id: string) {
+  try {
+    return await db.query.paginated_companies.findMany({
+      where: eq(paginated_companies.user_id, user_id),
+    });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUserPaginatedCompanies"));
+  }
+}
