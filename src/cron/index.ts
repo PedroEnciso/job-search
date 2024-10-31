@@ -219,7 +219,17 @@ const botAPI = {
           await deleteAllCurrentJobs();
           // add all jobs in jobs_for_current_jobs
           await bulkAddCurrentJobs(jobs_for_current_jobs);
+        } else {
+          logger.info("Latest match record is from today");
+          logger.info(
+            `Latest match record was created at: ${latest_match_record.created_at}`
+          );
         }
+      } else {
+        logger.info("youngest completed batch request not from today");
+        logger.info(
+          `It was created at: ${youngest_completed_request.created_at}`
+        );
       }
     } catch (error) {
       logger.error(`There was an error while checking for matches: ${error}`);
