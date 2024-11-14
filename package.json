@@ -45,6 +45,7 @@
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "express-validator": "^7.2.0",
+    "mailgun.js": "^10.2.3",
     "node-cron": "^3.0.3",
     "openai": "^4.57.1",
     "playwright": "^1.47.1",
