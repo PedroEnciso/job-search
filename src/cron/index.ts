@@ -46,6 +46,8 @@ const botAPI = {
       );
       // upload the file to openai
       const file = await openaiAPI.uploadJsonlFile();
+      // delete the requests.jsonl file
+      await fileWriterAPI.deleteRequestFile();
       // create batch request using file id
       const batch_request = await openaiAPI.createBatchRequest(file.id);
       // save batch id to db
