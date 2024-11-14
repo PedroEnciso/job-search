@@ -389,7 +389,7 @@ export async function deleteAllCurrentJobs() {
   try {
     await db.delete(current_jobs);
   } catch (error) {
-    throw new Error(getErrorMessage(error, "getUserCurrentJobs"));
+    throw new Error(getErrorMessage(error, "deleteAllCurrentJobs"));
   }
 }
 
@@ -397,7 +397,7 @@ export async function bulkAddCurrentJobs(jobs: NewCurrentJob[]) {
   try {
     await db.insert(current_jobs).values(jobs);
   } catch (error) {
-    throw new Error(getErrorMessage(error, "getUserCurrentJobs"));
+    throw new Error(getErrorMessage(error, "bulkAddCurrentJobs"));
   }
 }
 
