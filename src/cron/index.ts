@@ -156,7 +156,7 @@ const botAPI = {
         const latest_match_record = match_response_array[0];
         // check if there is a match record from today. Proceed if it is not from today
         if (
-          latest_match_record &&
+          !latest_match_record ||
           !dateIsToday(latest_match_record.created_at)
         ) {
           logger.info("Checking for job matches");
@@ -231,8 +231,10 @@ const botAPI = {
           await createMatchRecord();
           // erase all current_jobs
           await deleteAllCurrentJobs();
-          // add all jobs in jobs_for_current_jobs
-          await bulkAddCurrentJobs(jobs_for_current_jobs);
+          // add all jobs in jobs_for_current_jobs if there are any jobs to add
+          if (jobs_for_current_jobs.length > 0) {
+            await bulkAddCurrentJobs(jobs_for_current_jobs);
+          }
         } else {
           logger.info("Latest match record is from today");
           logger.info(
