@@ -24,6 +24,7 @@ import openaiAPI from "../lib/openai";
 import type { Company, BatchResponse, NewCurrentJob } from "../types";
 import { dateIsToday } from "../lib/util";
 import { logger } from "../logger";
+import { sendNewJobEmail } from "../lib/mailgun";
 
 const botAPI = {
   test() {
@@ -154,7 +155,10 @@ const botAPI = {
         const match_response_array = await getLatestMatchRecord();
         const latest_match_record = match_response_array[0];
         // check if there is a match record from today. Proceed if it is not from today
-        if (!dateIsToday(latest_match_record.created_at)) {
+        if (
+          latest_match_record &&
+          !dateIsToday(latest_match_record.created_at)
+        ) {
           logger.info("Checking for job matches");
           // array that holds all jobs to be add to current jobs
           const jobs_for_current_jobs: NewCurrentJob[] = [];
@@ -201,7 +205,15 @@ const botAPI = {
                       });
                     } else {
                       // job is new, send an email
-                      logger.info("TODO: Send the customer an email");
+                      sendNewJobEmail(
+                        job.title,
+                        company.name,
+                        user.name,
+                        user.email
+                      );
+                      logger.info(
+                        `Sent email to customer. Job: ${job.title}, customer: ${user.id}`
+                      );
                       // add the job to holder
                       jobs_for_current_jobs.push({
                         title: job.title,
