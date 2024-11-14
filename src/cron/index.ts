@@ -22,7 +22,7 @@ import scraperAPI from "../lib/scraper";
 import fileWriterAPI from "../lib/fileWriter";
 import openaiAPI from "../lib/openai";
 import type { Company, BatchResponse, NewCurrentJob } from "../types";
-import { dateIsTodayPST } from "../lib/util";
+import { dateIsToday } from "../lib/util";
 import { logger } from "../logger";
 
 const botAPI = {
@@ -149,12 +149,12 @@ const botAPI = {
       const response_array = await getYoungestCompletedBatchRequest();
       const youngest_completed_request = response_array[0];
       // check if updated_at is today in PST
-      if (dateIsTodayPST(youngest_completed_request.created_at)) {
+      if (dateIsToday(youngest_completed_request.created_at)) {
         // get the latest match record
         const match_response_array = await getLatestMatchRecord();
         const latest_match_record = match_response_array[0];
         // check if there is a match record from today. Proceed if it is not from today
-        if (!dateIsTodayPST(latest_match_record.created_at)) {
+        if (!dateIsToday(latest_match_record.created_at)) {
           logger.info("Checking for job matches");
           // array that holds all jobs to be add to current jobs
           const jobs_for_current_jobs: NewCurrentJob[] = [];
