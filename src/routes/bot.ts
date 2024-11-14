@@ -19,3 +19,14 @@ botRouter.get("/matches", async (req: Request, res: Response) => {
   botAPI.checkJobMatches();
   res.send("finished");
 });
+
+import { sendNewJobEmail } from "../lib/mailgun";
+botRouter.get("/email", async (req: Request, res: Response) => {
+  sendNewJobEmail(
+    "Full stac developer",
+    "Google",
+    "Pete",
+    "ped.enciso@gmail.com"
+  );
+  res.send("finished");
+});
