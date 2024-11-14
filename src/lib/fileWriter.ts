@@ -18,29 +18,17 @@ const fileWriterAPI = {
         companies[i].id
       );
       try {
-        // const data = await fs_promise.readFile(path, { encoding: "utf8" });
-
         // check if the file has been created
         let json_data_string = "";
         const json_file_path = path.join(dirname, "dist", "requests.jsonl");
         if (fs.existsSync(json_file_path)) {
           // file has been created, add to json_data_string
-          // json_data_string = fs.readFileSync(json_file_path, "utf8");
           json_data_string = await fsPromises.readFile(json_file_path, "utf8");
         }
+        // consolidate data from file and passed in data
         const all_data = json_data_string.concat(json_string);
-        // fs.writeFileSync();
+        // write consolidated data to the file
         await fsPromises.writeFile(json_file_path, all_data);
-
-        // const json_data = file.fs.readFile(
-        //   "results.json",
-        //   function (err, data) {
-        //     var json = JSON.parse(data);
-        //     json.push("search result: " + currentSearchResult);
-
-        //     fs.writeFile("results.json", JSON.stringify(json));
-        //   }
-        // );
       } catch (error) {
         console.log(
           "There was an error writing the request for " +
@@ -49,6 +37,15 @@ const fileWriterAPI = {
           error
         );
       }
+    }
+  },
+
+  async deleteRequestFile() {
+    try {
+      const json_file_path = path.join(dirname, "dist", "requests.jsonl");
+      await fsPromises.writeFile(json_file_path, "");
+    } catch (error) {
+      console.error(`Error clearing file: ${error}`);
     }
   },
 };
