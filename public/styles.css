@@ -3379,9 +3379,6 @@ html:has(.drawer-toggle:checked) {
 .z-50 {
   z-index: 50;
 }
-.z-0 {
-  z-index: 0;
-}
 .z-auto {
   z-index: auto;
 }
@@ -3507,9 +3504,6 @@ html:has(.drawer-toggle:checked) {
 .items-center {
   align-items: center;
 }
-.justify-start {
-  justify-content: flex-start;
-}
 .justify-center {
   justify-content: center;
 }
@@ -3530,6 +3524,9 @@ html:has(.drawer-toggle:checked) {
 }
 .gap-8 {
   gap: 2rem;
+}
+.gap-3 {
+  gap: 0.75rem;
 }
 .rounded {
   border-radius: 0.25rem;
@@ -3570,6 +3567,10 @@ html:has(.drawer-toggle:checked) {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-p,oklch(var(--p)/var(--tw-bg-opacity)));
 }
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
+}
 .bg-secondary {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-s,oklch(var(--s)/var(--tw-bg-opacity)));
@@ -3583,6 +3584,9 @@ html:has(.drawer-toggle:checked) {
 }
 .p-1 {
   padding: 0.25rem;
+}
+.p-3 {
+  padding: 0.75rem;
 }
 .p-4 {
   padding: 1rem;
@@ -3622,9 +3626,6 @@ html:has(.drawer-toggle:checked) {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-.pb-1 {
-  padding-bottom: 0.25rem;
 }
 .pb-2 {
   padding-bottom: 0.5rem;
