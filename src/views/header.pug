@@ -29,7 +29,7 @@ div.drawer.w-11_12.max-w-4xl.mx-auto
                   hx-target="#body"
                   hx-push-url="true"
                 )= tab.title
-  div.drawer-side
+  div.drawer-side.z-50
     label.drawer-overlay(for='my-drawer-3' aria-label='close sidebar')
     ul.menu.bg-base-100.min-h-full.w-80.p-4.z-50
       each tab in tabs

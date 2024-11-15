@@ -6,7 +6,7 @@ div.relative
     hx-target="#body"
     hx-push-url="true"
   ) < Back to companies
-div.bg-primary.rounded-xl.py-10.px-8.relative
+div.bg-primary.rounded-xl.py-10.px-8.relative.z-auto
   form.flex.flex-col.gap-4(
     hx-post='/companies/new',
     hx-trigger="submit",
@@ -31,11 +31,11 @@ div.bg-primary.rounded-xl.py-10.px-8.relative
           input(type="radio" name="paginated" value="false" required)
           span.label-text.font-medium.prose.prose-md.m-0.text-base-content No
     button#submit.relative.btn.btn-secondary.rounded Submit company
+          div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center.items-center
+            span.loading.loading-spinner.loading-sm 
+            p Creating company
     if error
       p.text-error= error
-    div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center.items-center
-      span.loading.loading-spinner.loading-sm 
-      p Creating company
     div.collapse.collapse-arrow
       input(type="checkbox" name="my-accordion").min-h-0
       div.collapse-title.text-lg.py-0.px-0.min-h-0 What does "paginated" mean?

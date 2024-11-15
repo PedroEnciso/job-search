@@ -3,13 +3,13 @@
 
 div.relative
   h2.prose.prose-2xl.font-medium.text-center.text-base-content.mb-4 New Keywords
-  a.absolute.top-1.left-0.prose.prose-sm(
+  a.absolute.hidden.md__block.top-1.left-0.prose.prose-sm(
     href="/keywords"
     hx-get="/keywords"
     hx-target="#body"
     hx-push-url="true"
   ) < Back to keywords
-div.bg-accent.rounded-xl.py-10.px-8
+div.bg-accent.rounded-xl.py-10.px-8.relative
   form#form.flex.flex-col.gap-4(
     hx-post='/keywords/new',
     hx-trigger="submit",
@@ -34,3 +34,9 @@ div.bg-accent.rounded-xl.py-10.px-8
         p Saving keywords
     if error
       p.text-error= error
+    a.absolute.md__hidden.-bottom-10.left-0.prose.prose-sm(
+      href="/companies"
+      hx-get="/companies"
+      hx-target="#body"
+      hx-push-url="true"
+    ) < Back to keywords

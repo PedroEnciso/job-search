@@ -1,6 +1,6 @@
 - const company_status = company.is_active ? "Active" : "Inactive"
-li.prose.w-full.max-w-full.flex.justify-between.items-center(id="company_"+company.id)
-  div
+li.prose.w-full.max-w-full.flex.flex-col.justify-between.md__flex-row(id="company_"+company.id)
+  div.flex.flex-col
     h3.my-0= company.name
     a(
       href=company.jobs_url
