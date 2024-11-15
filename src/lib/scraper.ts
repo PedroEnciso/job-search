@@ -13,8 +13,8 @@ const scraperAPI = {
       // go to each url
       const htmlArray: string[] = [];
       for (const url of job_urls) {
-        await page.goto(url);
-        // scroll to the bottom of the page 10 times to account for pagination through infinite scroll
+        await page.goto(url, { waitUntil: "load", timeout: 30000 });
+        // scroll to the bottom of the page 5 times to account for pagination through infinite scroll
         for (let i = 0; i < 5; i++) {
           await page.keyboard.press("End");
           await page.waitForTimeout(3000);
