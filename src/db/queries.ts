@@ -8,6 +8,7 @@ import {
   keywords,
   match_records,
   paginated_companies,
+  SelectCompany,
   user_companies,
   user_jobs,
   user_keywords,
@@ -25,7 +26,7 @@ import type {
 import { getErrorMessage, getStartAndEndHours } from "../lib/util";
 
 // SELECT queries
-export async function getAllCompanies(): Promise<Array<Company>> {
+export async function getAllCompanies(): Promise<Array<SelectCompany>> {
   try {
     return await db.query.companyTable.findMany();
   } catch (error) {
