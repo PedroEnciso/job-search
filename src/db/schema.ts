@@ -13,6 +13,7 @@ export const companyTable = pgTable("company", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   jobs_url: text("jobs_url").notNull(),
+  alternate_url: text("alternte_url"),
 });
 
 export const companyRelations = relations(companyTable, ({ many }) => ({
@@ -183,7 +184,7 @@ export const current_jobs_relations = relations(current_jobs, ({ one }) => ({
 
 export const paginated_companies_status_enum = pgEnum("status", [
   "pending",
-  "under review",
+  "reviewing",
   "completed",
 ]);
 
