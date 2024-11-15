@@ -24,11 +24,11 @@ div.bg-primary.rounded-xl.py-10.px-8.relative.z-auto
       input.input.input-bordered.w-full.rounded#company_url(type="text", placeholder="https://company.com/careers", required, name="company_url", hx-preserve)
     fieldset.form-control.w-full
       legend.label-text.font-medium.prose.prose-md.m-0.text-base-content Is this webpage paginated?
-        label.flex.gap-2.p-3
-          input(type="radio" name="paginated" value="true" required)
+        label.flex.gap-2.p-3(for="paginated")
+          input(id="paginated" type="radio" name="paginated" value="true" required)
           span.label-text.font-medium.prose.prose-md.m-0.text-base-content Yes
-        label.flex.gap-2.p-3
-          input(type="radio" name="paginated" value="false" required)
+        label.flex.gap-2.p-3(for="non-paginated")
+          input(id="non-paginated" type="radio" name="paginated" value="false" required checked)
           span.label-text.font-medium.prose.prose-md.m-0.text-base-content No
     button#submit.relative.btn.btn-secondary.rounded Submit company
           div.absolute.-inset-1.w-full.htmx-indicator.flex.gap-2.bg-white.flex.justify-center.items-center
