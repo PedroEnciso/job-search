@@ -25,6 +25,7 @@ import type { Company, BatchResponse, NewCurrentJob } from "../types";
 import { dateIsToday } from "../lib/util";
 import { logger } from "../logger";
 import { sendNewJobEmail } from "../lib/mailgun";
+import type { SelectCompany } from "../db/schema";
 
 const botAPI = {
   test() {
@@ -35,9 +36,16 @@ const botAPI = {
     logger.info("Running getJobs");
     try {
       // get all companys
-      const companies: Company[] = await getAllCompanies();
+      const companies: SelectCompany[] = await getAllCompanies();
       // get all urls in a string array
-      const urls: string[] = companies.map((comp) => comp.jobs_url);
+      const urls: string[] = companies.map((comp) => {
+        // return alternate url instead of jobs_url if it exists
+        // alternate url is used if there is an iframe in the main jobs page
+        if (comp.alternate_url) {
+          return comp.alternate_url;
+        }
+        return comp.jobs_url;
+      });
       // get html of each url into an array
       const jobHtmlArray: string[] = await scraperAPI.getHtmlFromJobPages(urls);
       // write requests to a .jsonl file
@@ -122,6 +130,11 @@ const botAPI = {
               // ensure that there are jobs to add
               if (jobs.length > 0) {
                 await insertManyJobs(jobs);
+              } else {
+                // warn that no jobs were found
+                logger.warning(
+                  `No jobs found, company_id: ${json_response.custom_id}`
+                );
               }
               // add tokens from response to total_tokens
               total_tokens =
