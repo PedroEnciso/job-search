@@ -112,7 +112,7 @@ export const user_companies_relations = relations(
 
 export const keywords = pgTable("keywords", {
   id: serial("id").primaryKey(),
-  phrase: text("phrase").notNull().unique(),
+  phrase: text("phrase").notNull(),
 });
 
 export const keywordsRelations = relations(keywords, ({ many }) => ({
@@ -184,7 +184,6 @@ export const current_jobs_relations = relations(current_jobs, ({ one }) => ({
 
 export const paginated_companies_status_enum = pgEnum("status", [
   "pending",
-  "reviewing",
   "completed",
 ]);
 
