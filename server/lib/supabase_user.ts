@@ -49,11 +49,13 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
   }
 
   async function sign_in_cheat() {
+    // sign in user to supabase
     const { data, error } = await supabase_user.auth.signInWithPassword({
       email: "ped.enciso@gmail.com",
       password: "#1keeper",
     });
 
+    // check for error
     if (error) {
       console.error(error);
       throw new Error(`${error_message} sign_in`);

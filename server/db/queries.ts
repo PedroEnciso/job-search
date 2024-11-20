@@ -141,6 +141,15 @@ export async function getLatestMatchRecord(): Promise<
   }
 }
 
+// TODO
+export async function createNewUser() {
+  try {
+    return await db.select().from(users);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "getUsers"));
+  }
+}
+
 export async function getUsers(): Promise<Array<User>> {
   try {
     return await db.select().from(users);
