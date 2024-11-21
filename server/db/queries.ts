@@ -421,7 +421,10 @@ export async function checkIfCompanyExists(name: string, url: string) {
   }
 }
 
-export async function createNewCompany(name: string, url: string) {
+export async function createNewCompany(
+  name: string,
+  url: string
+): Promise<Company[]> {
   try {
     return await db
       .insert(companyTable)
