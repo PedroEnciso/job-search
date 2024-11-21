@@ -149,6 +149,14 @@ export async function getUsers(): Promise<Array<User>> {
   }
 }
 
+export async function insertUser(user_id: string, name: string, email: string) {
+  try {
+    return await db.insert(users).values({ id: user_id, name, email });
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "insertUser"));
+  }
+}
+
 export async function getUserCompanies(
   user_id: string
 ): Promise<Array<CompanyWithIsActive>> {

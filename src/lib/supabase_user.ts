@@ -11,6 +11,7 @@ import {
   UserResponse,
   WeakPassword,
 } from "@supabase/supabase-js";
+import { insertUser } from "../db/queries";
 
 function SUPABASE_USER_CLASS(req: Request, res: Response) {
   const error_message = "Error in SUPABASE_USER_CLASS method";
@@ -71,11 +72,16 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
     }
   }
 
-  async function sign_up(email: string, password: string) {
+  async function sign_up(email: string, password: string, name: string) {
     const { data, error } = await supabase_user.auth.signUp({
       email,
       password,
     });
+
+    if (data.user) {
+      // add row to user table
+      insertUser(data.user.id, name, email);
+    }
 
     return { data, error };
   }

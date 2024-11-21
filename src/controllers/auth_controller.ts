@@ -65,9 +65,9 @@ function get_sign_up(req: Request, res: Response, next: NextFunction) {
 
 async function post_sign_up(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, password } = validateSignupRequest(req.body);
+    const { email, password, name } = validateSignupRequest(req.body);
     const supabase_user = SUPABASE_USER_CLASS(req, res);
-    const { error } = await supabase_user.sign_up(email, password);
+    const { error } = await supabase_user.sign_up(email, password, name);
 
     if (error) {
       console.log("supa error:", error);
@@ -138,8 +138,18 @@ function validateLoginRequest(request: LoginRequest | {}): {
 }
 
 function validateSignupRequest(request: LoginRequest | {}) {
+  // validate password and email
   const { email, password } = validateLoginRequest(request);
-  // password and email are validated
+  // validate name is included
+  let name: string | undefined = undefined;
+  if ("name" in request) {
+    name = request["name"] as string;
+    if (!name) {
+      throw new Error("Please fill in your name.");
+    }
+  } else {
+    throw new Error("Please fill in your name.");
+  }
   // validate that confirm-password was included and is the same as password
   let confirm_password: string | undefined = undefined;
   if ("confirm-password" in request) {
@@ -154,12 +164,13 @@ function validateSignupRequest(request: LoginRequest | {}) {
   } else {
     throw new Error("Please confirm your password.");
   }
-  return { email, password };
+  return { email, password, name };
 }
 
 interface LoginRequest {
   email?: string;
   password?: string;
+  name?: string;
   confirm_password?: string;
 }
 
