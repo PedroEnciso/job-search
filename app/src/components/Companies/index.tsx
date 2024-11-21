@@ -7,6 +7,7 @@ function CompaniesSection({
 }: CompaniesSectionProps) {
   return (
     <section>
+      <h2>Your companies</h2>
       {is_pending ? <p>Loading companies...</p> : null}
       {error ? <p>{error.message}</p> : null}
       {companies ? (
