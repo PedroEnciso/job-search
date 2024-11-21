@@ -1,0 +1,8 @@
+/server/node_modules/
+/server/test-results/
+/server/playwright-report/
+/server/blob-report/
+/server/playwright/.cache/
+/server/.env
+/server/dist
+/server/combined.log
