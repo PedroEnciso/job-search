@@ -118,7 +118,8 @@ export interface Supabase_User {
   get_user: () => Promise<UserResponse>;
   sign_up: (
     email: string,
-    password: string
+    password: string,
+    name: string
   ) => Promise<{
     data:
       | {
