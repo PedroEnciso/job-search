@@ -1,13 +1,16 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import path from "path";
+import cors from "cors";
 import cookie_parser from "cookie-parser";
 import body_parser from "body-parser";
 import cron from "node-cron";
+import "express-async-errors";
 import botAPI from "./cron";
 import { logger } from "./logger";
+import { errorHandler } from "./middleware/errors";
 import { Supabase_User_Request } from "./middleware/checkForUser";
-import { botRouter, view_router } from "./routes";
+import { botRouter, view_router, api_router } from "./routes";
 
 declare global {
   namespace Express {
@@ -24,6 +27,7 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 // use middleware
+app.use(cors());
 app.use(cookie_parser());
 app.use(body_parser.json());
 app.use(
@@ -36,17 +40,13 @@ app.use(
 app.set("views", path.join(dirname, "src", "views"));
 app.set("view engine", "pug");
 
-// use routers
-app.use("/", view_router);
+// api routes
+app.use("/api/v1", api_router);
+
 // add bot router in development for testing
 if (process.env.ENVIRONMENT === "DEVELOPMENT") {
   app.use("/bot", botRouter);
 }
-// route to display logs
-app.use("/logs", express.static(path.join(dirname, "combined.log")));
-
-// make public folder accessible
-app.use(express.static("public"));
 
 // schedule cron jobs
 // getJobs runs at 0:00
@@ -55,6 +55,9 @@ cron.schedule("0 0 * * *", () => botAPI.getJobs());
 cron.schedule("0 * * * *", () => botAPI.checkBatchResponse());
 // check for job matches every hour at *:30
 cron.schedule("30 * * * *", () => botAPI.checkJobMatches());
+
+// error handler, must be last middleware
+app.use(errorHandler);
 
 app.listen(port, () => {
   logger.info("App is running");
