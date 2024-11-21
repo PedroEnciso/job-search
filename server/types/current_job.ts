@@ -10,3 +10,10 @@ export interface NewCurrentJob {
   title: string;
   found_at: Date;
 }
+
+export interface FrontendCurrentJob {
+  title: string;
+  company: string;
+  job_url: string;
+  found_at: string;
+}

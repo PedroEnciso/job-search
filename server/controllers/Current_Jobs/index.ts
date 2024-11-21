@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { Supabase_User_Request } from "../../middleware/checkForUser";
 import { getUserCurrentJobs } from "../../db/queries";
 import { logger } from "../../logger";
+import { FrontendCurrentJob } from "../../types";
 
 async function get_current_jobs(req: Request, res: Response) {
   try {
@@ -10,7 +11,7 @@ async function get_current_jobs(req: Request, res: Response) {
     // get users current_jobs
     const current_jobs = await getUserCurrentJobs(user_id);
     // format the jobs for the client
-    let frontend_jobs = current_jobs.map((job) => {
+    let frontend_jobs: FrontendCurrentJob[] = current_jobs.map((job) => {
       const date = new Date(job.found_at);
       const formattedDate = date.toLocaleDateString("en-US", {
         weekday: "short",
