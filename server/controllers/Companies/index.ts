@@ -98,41 +98,65 @@ async function post_new_company(req: Request, res: Response) {
 }
 
 async function patch_company(req: Request, res: Response) {
-  // get the user's id
-  const { user_id } = req.supabase_user as Supabase_User_Request;
-  // get the company id
-  const { id } = req.params;
-  const company_id = parseInt(id);
-  // get the new status as a boolean
-  const { new_status } = req.body;
-  const new_is_active = new_status === "active" ? true : false;
-  // update user_companies with new status
-  await updateUserCompanyStatus(user_id, company_id, new_is_active);
-  // return the updated resource
-  res.status(200).json({
-    id: company_id,
-    name: req.body.name,
-    jobs_url: req.body.url,
-    is_active: new_is_active,
-  });
+  try {
+    // get the user's id
+    const { user_id } = req.supabase_user as Supabase_User_Request;
+    // get the company id
+    const { id } = req.params;
+    const company_id = parseInt(id);
+    // get the new status as a boolean
+    const { new_status } = req.body;
+    const new_is_active = new_status === "active" ? true : false;
+    // update user_companies with new status
+    await updateUserCompanyStatus(user_id, company_id, new_is_active);
+    // return the updated resource
+    res.status(200).json({
+      id: company_id,
+      name: req.body.name,
+      jobs_url: req.body.url,
+      is_active: new_is_active,
+    });
+  } catch (error) {
+    // log the specific error
+    if (error instanceof Error) {
+      logger.error(error.message);
+    } else if (error instanceof String) {
+      logger.error(error);
+    } else {
+      logger.error("Error in PATCH /companies");
+    }
+    // send generic error
+    throw new Error("There was an error updating this company.");
+  }
 }
 
 async function delete_company(req: Request, res: Response) {
-  // get the user's id
-  const { user_id } = req.supabase_user as Supabase_User_Request;
-  // get the company id
-  const { id } = req.params;
-  // get company id as a number
-  const company_id = parseInt(id);
-  // ensure company_id is a number
-  if (!isNaN(company_id)) {
-    // company_id is a number, proceed with deleting
-    await deleteUserCompany(user_id, company_id);
+  try {
+    // get the user's id
+    const { user_id } = req.supabase_user as Supabase_User_Request;
+    // get the company id
+    const { id } = req.params;
+    // get company id as a number
+    const company_id = parseInt(id);
+    // ensure company_id is a number
+    if (!isNaN(company_id)) {
+      // company_id is a number, proceed with deleting
+      await deleteUserCompany(user_id, company_id);
+    }
+    // render
+    res.status(200).send();
+  } catch (error) {
+    // log the specific error
+    if (error instanceof Error) {
+      logger.error(error.message);
+    } else if (error instanceof String) {
+      logger.error(error);
+    } else {
+      logger.error("Error in DELETE /companies");
+    }
+    // send generic error
+    throw new Error("There was an error deleting this company.");
   }
-  // get user's current companies
-  const user_companies_with_is_active = await getUserCompanies(user_id);
-  // render
-  res.status(204).send();
 }
 
 export default {
