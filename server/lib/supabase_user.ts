@@ -58,7 +58,7 @@ function SUPABASE_USER_CLASS(req: Request, res: Response) {
     // check for error
     if (error) {
       console.error(error);
-      throw new Error(`${error_message} sign_in`);
+      throw new Error(`${error_message} sign_in_cheat`);
     }
 
     return data;
