@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import expressAsyncHandler from "express-async-handler";
 import SUPABASE_USER_CLASS from "../lib/supabase_user";
+import { logger } from "../logger";
 
 // GET /login
 const get_login = expressAsyncHandler(
@@ -19,18 +20,25 @@ async function post_login(req: Request, res: Response, next: NextFunction) {
     const { email, password } = validateLoginRequest(req.body);
     // login user using supabase_user
     const supabase_user = SUPABASE_USER_CLASS(req, res);
-    const { error } = await supabase_user.sign_in(email, password);
+    const { data, error } = await supabase_user.sign_in(email, password);
 
     if (error) {
+      logger.info("unsuccessful login");
+      logger.error(error);
       // unsuccessful login, notify user
       res.render("auth/login", {
         error: error.message,
       });
     } else {
+      logger.info("user logged in", {
+        user_id: data.user?.id,
+      });
       // success, load current jobs
       res.redirect("/");
     }
   } catch (error) {
+    // log error
+    logger.error(error);
     const message =
       error instanceof Error
         ? error.message
@@ -67,19 +75,23 @@ async function post_sign_up(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password, name } = validateSignupRequest(req.body);
     const supabase_user = SUPABASE_USER_CLASS(req, res);
-    const { error } = await supabase_user.sign_up(email, password, name);
+    const { data, error } = await supabase_user.sign_up(email, password, name);
 
     if (error) {
-      console.log("supa error:", error);
+      logger.error(error);
       // unsuccessful sign up, notify user
       res.render("auth/signup", {
         error: error.message,
       });
     } else {
+      logger.info("new user signed up", {
+        user_id: data.user?.id,
+      });
       // success, load current jobs
       res.redirect("/");
     }
   } catch (error) {
+    logger.error(error);
     const message =
       error instanceof Error
         ? error.message
