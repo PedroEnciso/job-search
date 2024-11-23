@@ -23,17 +23,16 @@ import fileWriterAPI from "../lib/fileWriter";
 import openaiAPI from "../lib/openai";
 import type { Company, BatchResponse, NewCurrentJob } from "../types";
 import { dateIsToday } from "../lib/util";
-import { logger } from "../logger";
+import { cron_logger } from "../logger";
 import { sendNewJobEmail } from "../lib/mailgun";
 import type { SelectCompany } from "../db/schema";
 
 const botAPI = {
-  test() {
-    logger.info("Running test");
-  },
+  test() {},
 
   async getJobs() {
-    logger.info("Running getJobs");
+    cron_logger.info("Getting jobs");
+    cron_logger.profile("Finished getting jobs");
     try {
       // get all companys
       const companies: SelectCompany[] = await getAllCompanies();
@@ -61,9 +60,10 @@ const botAPI = {
       const batch_request = await openaiAPI.createBatchRequest(file.id);
       // save batch id to db
       await createBatchRequest(batch_request.id, file.id);
-      logger.info("Finished running getJobs");
+      cron_logger.profile("Finished getting jobs");
     } catch (error) {
-      logger.error(`Error getting jobs: ${error}`);
+      // log error with cron_logger
+      cron_logger.error(error);
     }
   },
 
@@ -91,7 +91,7 @@ const botAPI = {
           batch_request.status === "completed" &&
           batch_request.output_file_id
         ) {
-          logger.info("Found a completed batch response");
+          cron_logger.profile("finished creating jobs");
           // fetch the file response from openai as an array of responses
           const response_array = await openaiAPI.getBatchResponseFileAsArray(
             batch_request.output_file_id
@@ -106,7 +106,7 @@ const botAPI = {
             // check if there is an error in the response
             if (json_response.error) {
               // log the error, I'm unsure of its structure
-              logger.error(
+              cron_logger.error(
                 `There was an error with the response for job #${json_response.custom_id}: ${json_response.error}`
               );
             } else {
@@ -132,7 +132,7 @@ const botAPI = {
                 await insertManyJobs(jobs);
               } else {
                 // warn that no jobs were found
-                logger.warning(
+                cron_logger.warn(
                   `No jobs found, company_id: ${json_response.custom_id}`
                 );
               }
@@ -142,18 +142,16 @@ const botAPI = {
             }
           }
           // Finished looping through responses and creating jobs
-          logger.info("finished creating jobs");
+          cron_logger.profile("finished creating jobs");
           // update batchResponse with total_tokens if they are greater than 0
           if (total_tokens > 0) {
             await updateBatchRequestTokens(db_batch_request.id, total_tokens);
-            logger.info(`Request used ${total_tokens} tokens`);
+            cron_logger.info(`Request used ${total_tokens} tokens`);
           }
         }
       }
     } catch (error) {
-      logger.error(
-        `There was an error while checking for a batch response: ${error}`
-      );
+      cron_logger.error(error);
     }
   },
 
@@ -172,7 +170,7 @@ const botAPI = {
           !latest_match_record ||
           !dateIsToday(latest_match_record.created_at)
         ) {
-          logger.info("Checking for job matches");
+          cron_logger.profile("Finished checking for job matches");
           // array that holds all jobs to be add to current jobs
           const jobs_for_current_jobs: NewCurrentJob[] = [];
           // get users from database
@@ -224,7 +222,7 @@ const botAPI = {
                         user.name,
                         user.email
                       );
-                      logger.info(
+                      cron_logger.info(
                         `Sent email to customer. Job: ${job.title}, customer: ${user.id}`
                       );
                       // add the job to holder
@@ -248,20 +246,11 @@ const botAPI = {
           if (jobs_for_current_jobs.length > 0) {
             await bulkAddCurrentJobs(jobs_for_current_jobs);
           }
-        } else {
-          logger.info("Latest match record is from today");
-          logger.info(
-            `Latest match record was created at: ${latest_match_record.created_at}`
-          );
+          cron_logger.profile("Finished checking for job matches");
         }
-      } else {
-        logger.info("youngest completed batch request not from today");
-        logger.info(
-          `It was created at: ${youngest_completed_request.created_at}`
-        );
       }
     } catch (error) {
-      logger.error(`There was an error while checking for matches: ${error}`);
+      cron_logger.error(error);
     }
   },
 };
