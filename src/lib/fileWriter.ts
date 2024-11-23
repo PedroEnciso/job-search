@@ -4,6 +4,7 @@ import openaiAPI from "./openai";
 import path from "path";
 import { dirname } from "..";
 import type { Company } from "../types";
+import { logger } from "../logger";
 
 // const path = "./src/requests/requests.jsonl";
 
@@ -30,12 +31,10 @@ const fileWriterAPI = {
         // write consolidated data to the file
         await fsPromises.writeFile(json_file_path, all_data);
       } catch (error) {
-        console.log(
-          "There was an error writing the request for " +
-            companies[i].name +
-            ".",
-          error
+        logger.error(
+          "There was an error writing the request for " + companies[i].name
         );
+        logger.error(error);
       }
     }
   },

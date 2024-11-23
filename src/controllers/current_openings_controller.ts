@@ -62,7 +62,7 @@ async function get_current_openings(req: Request, res: Response) {
       });
     }
   } catch (error) {
-    console.log("Error at GET /current_jobs", error);
+    logger.error(error);
     res.render("current_jobs", {
       jobs: [],
       sidebar: "Current openings",

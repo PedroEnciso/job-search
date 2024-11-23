@@ -196,7 +196,6 @@ async function validateNewCompanyRequest(req: Request) {
     .run(req);
   // check for errors
   if (!url_result.isEmpty()) {
-    console.log(url_result);
     throw new Error(url_result.context.errors[0].msg);
   }
   // validate and sanitize paginated
@@ -207,7 +206,6 @@ async function validateNewCompanyRequest(req: Request) {
     .run(req);
   // check for errors
   if (!paginated_result.isEmpty()) {
-    console.log(paginated_result);
     throw new Error(paginated_result.context.errors[0].msg);
   }
 
