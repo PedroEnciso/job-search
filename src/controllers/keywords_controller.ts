@@ -7,6 +7,7 @@ import {
 } from "../db/queries";
 import { Supabase_User_Request } from "../middleware/checkForUser";
 import { check } from "express-validator";
+import { logger } from "../logger";
 
 async function get_keywords(req: Request, res: Response) {
   try {
@@ -26,7 +27,7 @@ async function get_keywords(req: Request, res: Response) {
       });
     }
   } catch (error) {
-    console.log("error getting keywords");
+    logger.error(error);
   }
 }
 
@@ -63,8 +64,13 @@ async function post_new_keywords(req: Request, res: Response) {
       new_keywords.map((key) => key.id),
       user_id
     );
+    logger.info("keywords were created", {
+      user_id,
+      keywords: keywords.join(", "),
+    });
     res.redirect("/keywords");
   } catch (error) {
+    logger.error(error);
     res.render("index", {
       page: "Keywords",
       content: "new keywords",
@@ -89,12 +95,15 @@ async function delete_keyword(req: Request, res: Response) {
     }
     // get user's keywords
     const user_keywords = await getUserKeywords(user_id);
+
+    logger.info("keyword was deleted", { user_id, keyword_id });
+
     // render
     res.render("keywords/keywords", {
       keywords: user_keywords,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.render("error", {
       message:
         "There was an issue deleting a keyword. Please refresh the page.",

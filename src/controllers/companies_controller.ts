@@ -12,6 +12,7 @@ import {
 } from "../db/queries";
 import { check } from "express-validator";
 import { Supabase_User_Request } from "../middleware/checkForUser";
+import { logger } from "../logger";
 
 async function get_companies(req: Request, res: Response) {
   const { user_id } = req.supabase_user as Supabase_User_Request;
@@ -36,7 +37,7 @@ async function get_companies(req: Request, res: Response) {
       });
     }
   } catch (error) {
-    console.log("error getting companies");
+    logger.error(error);
   }
 }
 
@@ -77,7 +78,9 @@ async function post_new_company(req: Request, res: Response) {
         // set arbitrary company_id value
         company_id = 0;
         // send email to admin that a new paginated company was created
-        console.log("TODO: SEND EMAIL UPDATE");
+        logger.warn("A new paginated company was created", {
+          user_id,
+        });
       } else {
         // company has not yet been added to db, add it
         const new_company = await createNewCompany(company_name, company_url);
@@ -100,8 +103,13 @@ async function post_new_company(req: Request, res: Response) {
       // only add new user company row if not paginated
       await createNewUserCompany(user_id, company_id, company_is_active);
     }
+    logger.info("company created", {
+      user_id,
+      company_id,
+    });
     res.redirect("/companies");
   } catch (error) {
+    logger.error(error);
     // render error
     res.render("index", {
       page: "companies",
@@ -122,6 +130,9 @@ async function patch_company(req: Request, res: Response) {
   const new_is_active = new_status === "active" ? true : false;
   // update user_companies with new status
   await updateUserCompanyStatus(user_id, company_id, new_is_active);
+
+  logger.info("company was updated", { user_id, company_id });
+
   // return
   res.render("companies/company", {
     company: {
@@ -147,6 +158,8 @@ async function delete_company(req: Request, res: Response) {
   }
   // get user's current companie
   const user_companies_with_is_active = await getUserCompanies(user_id);
+
+  logger.info("Company was deleted", { user_id, company_id });
   // render
   res.render("companies/companies", {
     companies: user_companies_with_is_active,
