@@ -8,6 +8,7 @@ import botAPI from "./cron";
 import { logger } from "./logger";
 import { Supabase_User_Request } from "./middleware/checkForUser";
 import { botRouter, view_router } from "./routes";
+import { http_logger } from "./logger";
 
 declare global {
   namespace Express {
@@ -31,6 +32,7 @@ app.use(
     extended: true,
   })
 );
+app.use(http_logger);
 
 // set pug as the view engine
 app.set("views", path.join(dirname, "src", "views"));
@@ -58,5 +60,4 @@ cron.schedule("30 * * * *", () => botAPI.checkJobMatches());
 
 app.listen(port, () => {
   logger.info("App is running");
-  console.log(`[server]: Server is farting at http://localhost:${port}`);
 });
